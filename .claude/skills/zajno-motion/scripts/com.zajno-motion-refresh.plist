@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.zajno-motion-refresh</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>HOME_PLACEHOLDER/.claude/skills/zajno-motion/scripts/refresh.sh</string>
+  </array>
+
+  <!--
+    Run on the 1st of January, April, July, October at 09:13 local time.
+    That's quarterly. The :13 (not :00) avoids the global clock-stampede
+    when many cron jobs fire on the hour.
+  -->
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict>
+      <key>Month</key>   <integer>1</integer>
+      <key>Day</key>     <integer>1</integer>
+      <key>Hour</key>    <integer>9</integer>
+      <key>Minute</key>  <integer>13</integer>
+    </dict>
+    <dict>
+      <key>Month</key>   <integer>4</integer>
+      <key>Day</key>     <integer>1</integer>
+      <key>Hour</key>    <integer>9</integer>
+      <key>Minute</key>  <integer>13</integer>
+    </dict>
+    <dict>
+      <key>Month</key>   <integer>7</integer>
+      <key>Day</key>     <integer>1</integer>
+      <key>Hour</key>    <integer>9</integer>
+      <key>Minute</key>  <integer>13</integer>
+    </dict>
+    <dict>
+      <key>Month</key>   <integer>10</integer>
+      <key>Day</key>     <integer>1</integer>
+      <key>Hour</key>    <integer>9</integer>
+      <key>Minute</key>  <integer>13</integer>
+    </dict>
+  </array>
+
+  <!--
+    If the Mac is asleep at fire-time, run when it wakes (this is the
+    main reason to use launchd over cron on macOS).
+  -->
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>HOME_PLACEHOLDER/.cache/zajno-motion/refresh.log</string>
+  <key>StandardErrorPath</key>
+  <string>HOME_PLACEHOLDER/.cache/zajno-motion/refresh.log</string>
+</dict>
+</plist>

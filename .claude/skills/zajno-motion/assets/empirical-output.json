@@ -1,0 +1,506 @@
+{
+  "files_analyzed": 27,
+  "total_keyframes": 7754,
+  "framerates": {
+    "30": 9,
+    "60": 17,
+    "24": 1
+  },
+  "duration_histogram": {
+    "min_s": 0.54,
+    "max_s": 7.0,
+    "median_s": 2.35,
+    "mean_s": 2.76
+  },
+  "layer_counts_distribution": {
+    "2": 3,
+    "3": 2,
+    "6": 7,
+    "5": 1,
+    "12": 2,
+    "18": 1,
+    "9": 3,
+    "8": 1,
+    "1": 2,
+    "14": 3,
+    "13": 1,
+    "10": 1
+  },
+  "top_easings": [
+    {
+      "ox": 0.167,
+      "oy": 0.167,
+      "ix": 0.833,
+      "iy": 0.833,
+      "uses": 2465
+    },
+    {
+      "ox": 0.55,
+      "oy": 0,
+      "ix": 0.45,
+      "iy": 1,
+      "uses": 66
+    },
+    {
+      "ox": 0.53,
+      "oy": 0,
+      "ix": 0.833,
+      "iy": 0.833,
+      "uses": 20
+    },
+    {
+      "ox": 0.167,
+      "oy": 0.167,
+      "ix": 0.43,
+      "iy": 1,
+      "uses": 19
+    },
+    {
+      "ox": 0.65,
+      "oy": 0,
+      "ix": 0.833,
+      "iy": 0.833,
+      "uses": 9
+    },
+    {
+      "ox": 0.7,
+      "oy": 0,
+      "ix": 0.3,
+      "iy": 1,
+      "uses": 6
+    },
+    {
+      "ox": 0.6,
+      "oy": 0,
+      "ix": 0.4,
+      "iy": 1,
+      "uses": 5
+    },
+    {
+      "ox": 0.74,
+      "oy": 0,
+      "ix": 0.26,
+      "iy": 1,
+      "uses": 4
+    },
+    {
+      "ox": 0.64,
+      "oy": 0,
+      "ix": 0.36,
+      "iy": 1,
+      "uses": 4
+    },
+    {
+      "ox": 0.167,
+      "oy": 0.167,
+      "ix": 0.17,
+      "iy": 1,
+      "uses": 3
+    },
+    {
+      "ox": 0.85,
+      "oy": 0,
+      "ix": 0.833,
+      "iy": 0.833,
+      "uses": 3
+    },
+    {
+      "ox": 0.167,
+      "oy": 0.167,
+      "ix": 0.31,
+      "iy": 1,
+      "uses": 2
+    },
+    {
+      "ox": 0.167,
+      "oy": 0,
+      "ix": 0.833,
+      "iy": 1,
+      "uses": 2
+    },
+    {
+      "ox": 0.167,
+      "oy": 0.167,
+      "ix": 0.22,
+      "iy": 1,
+      "uses": 2
+    },
+    {
+      "ox": 0.16,
+      "oy": 0,
+      "ix": 0.22,
+      "iy": 1,
+      "uses": 2
+    },
+    {
+      "ox": 0.16,
+      "oy": 0,
+      "ix": 0.823,
+      "iy": 0.778,
+      "uses": 2
+    },
+    {
+      "ox": 0.167,
+      "oy": 0.167,
+      "ix": 0.26,
+      "iy": 1,
+      "uses": 2
+    },
+    {
+      "ox": 0.167,
+      "oy": 0.167,
+      "ix": 0.63,
+      "iy": 1,
+      "uses": 2
+    },
+    {
+      "ox": 0.57,
+      "oy": 0,
+      "ix": 0.571,
+      "iy": 1,
+      "uses": 1
+    },
+    {
+      "ox": 0.48,
+      "oy": 0,
+      "ix": 0.833,
+      "iy": 0.833,
+      "uses": 1
+    }
+  ],
+  "top_colors": [
+    {
+      "hex": "#0c0b0b",
+      "uses": 195,
+      "luminance": 0.044
+    },
+    {
+      "hex": "#fdfcfa",
+      "uses": 97,
+      "luminance": 0.989
+    },
+    {
+      "hex": "#727272",
+      "uses": 76,
+      "luminance": 0.447
+    },
+    {
+      "hex": "#ffffff",
+      "uses": 44,
+      "luminance": 1.0
+    },
+    {
+      "hex": "#000000",
+      "uses": 41,
+      "luminance": 0.0
+    },
+    {
+      "hex": "#6777b2",
+      "uses": 25,
+      "luminance": 0.47
+    },
+    {
+      "hex": "#050504",
+      "uses": 12,
+      "luminance": 0.019
+    },
+    {
+      "hex": "#121212",
+      "uses": 5,
+      "luminance": 0.071
+    },
+    {
+      "hex": "#1c1b1b",
+      "uses": 4,
+      "luminance": 0.107
+    },
+    {
+      "hex": "#ff0000",
+      "uses": 2,
+      "luminance": 0.213
+    },
+    {
+      "hex": "#828282",
+      "uses": 2,
+      "luminance": 0.51
+    },
+    {
+      "hex": "#d6e8c8",
+      "uses": 2,
+      "luminance": 0.886
+    },
+    {
+      "hex": "#615871",
+      "uses": 1,
+      "luminance": 0.36
+    },
+    {
+      "hex": "#d2c8e8",
+      "uses": 1,
+      "luminance": 0.802
+    },
+    {
+      "hex": "#d6d6d6",
+      "uses": 1,
+      "luminance": 0.839
+    },
+    {
+      "hex": "#7f7f82",
+      "uses": 1,
+      "luminance": 0.499
+    },
+    {
+      "hex": "#515567",
+      "uses": 1,
+      "luminance": 0.335
+    },
+    {
+      "hex": "#c8cfe8",
+      "uses": 1,
+      "luminance": 0.813
+    },
+    {
+      "hex": "#7a7a7a",
+      "uses": 1,
+      "luminance": 0.478
+    },
+    {
+      "hex": "#e7e9cb",
+      "uses": 1,
+      "luminance": 0.904
+    },
+    {
+      "hex": "#c0bebc",
+      "uses": 1,
+      "luminance": 0.746
+    },
+    {
+      "hex": "#6d805b",
+      "uses": 1,
+      "luminance": 0.476
+    },
+    {
+      "hex": "#d8e9ca",
+      "uses": 1,
+      "luminance": 0.891
+    }
+  ],
+  "per_file": [
+    {
+      "name": "not_real_time.json",
+      "duration_s": 3.43,
+      "fr": 60,
+      "frames": 206,
+      "layers": 6,
+      "bytes": 681082
+    },
+    {
+      "name": "fade.json",
+      "duration_s": 0.67,
+      "fr": 60,
+      "frames": 40,
+      "layers": 9,
+      "bytes": 67571
+    },
+    {
+      "name": "intro_menu.json",
+      "duration_s": 0.67,
+      "fr": 60,
+      "frames": 40,
+      "layers": 12,
+      "bytes": 42074
+    },
+    {
+      "name": "preloader_lottie_circles_tablet.json",
+      "duration_s": 3.68,
+      "fr": 60,
+      "frames": 221,
+      "layers": 14,
+      "bytes": 38703
+    },
+    {
+      "name": "preloader_lottie_circles_desktop.json",
+      "duration_s": 3.2,
+      "fr": 60,
+      "frames": 192,
+      "layers": 14,
+      "bytes": 38691
+    },
+    {
+      "name": "preloader_lottie_circles_mobile.json",
+      "duration_s": 3.85,
+      "fr": 60,
+      "frames": 231,
+      "layers": 14,
+      "bytes": 38691
+    },
+    {
+      "name": "sources.json",
+      "duration_s": 0.67,
+      "fr": 60,
+      "frames": 40,
+      "layers": 13,
+      "bytes": 38095
+    },
+    {
+      "name": "easing_menu.json",
+      "duration_s": 0.67,
+      "fr": 60,
+      "frames": 40,
+      "layers": 9,
+      "bytes": 30504
+    },
+    {
+      "name": "dimension.json",
+      "duration_s": 0.67,
+      "fr": 60,
+      "frames": 40,
+      "layers": 18,
+      "bytes": 28461
+    },
+    {
+      "name": "ease_out.json",
+      "duration_s": 2.35,
+      "fr": 60,
+      "frames": 141,
+      "layers": 6,
+      "bytes": 28286
+    },
+    {
+      "name": "delay_menu.json",
+      "duration_s": 0.67,
+      "fr": 60,
+      "frames": 40,
+      "layers": 12,
+      "bytes": 27917
+    },
+    {
+      "name": "ease.json",
+      "duration_s": 2.33,
+      "fr": 60,
+      "frames": 140,
+      "layers": 6,
+      "bytes": 27766
+    },
+    {
+      "name": "ease_in.json",
+      "duration_s": 2.35,
+      "fr": 60,
+      "frames": 141,
+      "layers": 6,
+      "bytes": 26336
+    },
+    {
+      "name": "cubic.json",
+      "duration_s": 2.35,
+      "fr": 60,
+      "frames": 141,
+      "layers": 6,
+      "bytes": 23999
+    },
+    {
+      "name": "zoom.json",
+      "duration_s": 0.67,
+      "fr": 60,
+      "frames": 40,
+      "layers": 10,
+      "bytes": 17860
+    },
+    {
+      "name": "header_logo_big_pupils.json",
+      "duration_s": 7.0,
+      "fr": 30,
+      "frames": 210,
+      "layers": 9,
+      "bytes": 16654
+    },
+    {
+      "name": "header_logo_tech.json",
+      "duration_s": 7.0,
+      "fr": 30,
+      "frames": 210,
+      "layers": 8,
+      "bytes": 16122
+    },
+    {
+      "name": "header_logo_menu.json",
+      "duration_s": 7.0,
+      "fr": 60,
+      "frames": 420,
+      "layers": 2,
+      "bytes": 12230
+    },
+    {
+      "name": "8_zoom.json",
+      "duration_s": 3.33,
+      "fr": 30,
+      "frames": 100,
+      "layers": 3,
+      "bytes": 9746
+    },
+    {
+      "name": "parallax.json",
+      "duration_s": 3.33,
+      "fr": 30,
+      "frames": 100,
+      "layers": 1,
+      "bytes": 8632
+    },
+    {
+      "name": "linear.json",
+      "duration_s": 2.35,
+      "fr": 60,
+      "frames": 141,
+      "layers": 6,
+      "bytes": 8616
+    },
+    {
+      "name": "fade_in_out.json",
+      "duration_s": 2.5,
+      "fr": 30,
+      "frames": 75,
+      "layers": 6,
+      "bytes": 7430
+    },
+    {
+      "name": "delay.json",
+      "duration_s": 1.83,
+      "fr": 30,
+      "frames": 55,
+      "layers": 5,
+      "bytes": 4929
+    },
+    {
+      "name": "preloader_2.json",
+      "duration_s": 0.54,
+      "fr": 24,
+      "frames": 13,
+      "layers": 2,
+      "bytes": 3979
+    },
+    {
+      "name": "masking.json",
+      "duration_s": 4.53,
+      "fr": 30,
+      "frames": 136,
+      "layers": 3,
+      "bytes": 3742
+    },
+    {
+      "name": "1_easing_visual.json",
+      "duration_s": 3.33,
+      "fr": 30,
+      "frames": 100,
+      "layers": 2,
+      "bytes": 2906
+    },
+    {
+      "name": "morph.json",
+      "duration_s": 3.5,
+      "fr": 30,
+      "frames": 105,
+      "layers": 1,
+      "bytes": 2779
+    }
+  ]
+}

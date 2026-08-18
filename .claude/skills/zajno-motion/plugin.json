@@ -1,0 +1,122 @@
+{
+  "name": "zajno-motion",
+  "version": "1.2.1",
+  "displayName": "Zajno Motion Principles",
+  "description": "Eight motion-design principles from Zajno Digital Studio (motion.zajno.com), codified as a reusable skill with production-ready GSAP / Lenis / Lottie / ScrollTrigger snippets and Zajno's actual custom-bezier easing curves.",
+  "author": {
+    "name": "Michael Guttormsen",
+    "email": "michael.guttormsen100@gmail.com"
+  },
+  "credits": [
+    {
+      "name": "Zajno Digital Studio",
+      "role": "Original principles + visual reference",
+      "url": "https://motion.zajno.com"
+    }
+  ],
+  "license": "MIT (skill structure) — principles attributable to Zajno",
+  "keywords": [
+    "motion",
+    "animation",
+    "gsap",
+    "scrolltrigger",
+    "lenis",
+    "lottie",
+    "design-system",
+    "easing",
+    "parallax",
+    "stagger",
+    "frontend"
+  ],
+  "claude": {
+    "skillType": "flexible",
+    "category": "frontend-design",
+    "entrypoint": "SKILL.md",
+    "allowedTools": [
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Bash",
+      "AskUserQuestion"
+    ]
+  },
+  "principles": [
+    { "id": 1, "name": "Easing",             "file": "principles/01-easing.md" },
+    { "id": 2, "name": "Offset and Delay",   "file": "principles/02-offset-delay.md" },
+    { "id": 3, "name": "Fade In/Out",        "file": "principles/03-fade.md" },
+    { "id": 4, "name": "Transform & Morph",  "file": "principles/04-transform-morph.md" },
+    { "id": 5, "name": "Masking",            "file": "principles/05-masking.md" },
+    { "id": 6, "name": "Dimension",          "file": "principles/06-dimension.md" },
+    { "id": 7, "name": "Parallax",           "file": "principles/07-parallax.md" },
+    { "id": 8, "name": "Zoom",               "file": "principles/08-zoom.md" }
+  ],
+  "stack": {
+    "gsap": "^3.10.4",
+    "gsap-plugins": ["ScrollTrigger", "CustomEase", "Observer", "MotionPathPlugin", "Flip"],
+    "lenis": "@studio-freight/lenis@^1",
+    "lottie": "lottie-web@^5",
+    "physics-optional": "matter-js@^0.18"
+  },
+  "extractedFrom": {
+    "siteUrl": "https://motion.zajno.com",
+    "scriptUrl": "https://cdn.zajno.com/dev/motion/script.v33.min.js",
+    "extractedOn": "2026-05-23",
+    "verifiedAssets": [
+      "bounce custom-ease bezier",
+      "bounceSmall custom-ease bezier",
+      "Lenis duration + easing config",
+      "ScrollTrigger pin + anticipatePin + scrub values",
+      "mobile breakpoint at width > 991",
+      "27 Lottie animation files (7897 keyframes parsed)",
+      "Empirical color palette, easing distribution, and duration histogram"
+    ]
+  },
+  "changelog": [
+    {
+      "version": "1.2.1",
+      "date": "2026-05-23",
+      "changes": [
+        "Source archive: refresh.sh now saves index.html + script.v33.min.js to ~/.cache/zajno-motion/source/ each run — full time-capsule if site is ever taken down",
+        "Takedown detection: if motion.zajno.com returns non-200 or empty, cache stays untouched and ~/.cache/zajno-motion/takedown-detected.md is written for Claude to surface",
+        "SKILL.md activation flow updated: check both last-diff.md AND takedown-detected.md"
+      ]
+    },
+    {
+      "version": "1.2.0",
+      "date": "2026-05-23",
+      "changes": [
+        "Moved Lottie raw files from skill folder to ~/.cache/zajno-motion/lotties/ — skill is now 152KB (was 1.5MB)",
+        "Added scripts/refresh.sh — fetch motion.zajno.com, diff against manifest, re-parse, write diff log",
+        "Added scripts/install-cron.sh + com.zajno-motion-refresh.plist — quarterly launchd job",
+        "Added cache manifest.json with sha256 hashes for change detection",
+        "Fixed case-collision bug in URL→filename mapping (APFS case-insensitivity)",
+        "SKILL.md now instructs Claude to check ~/.cache/zajno-motion/last-diff.md on activation and record material changes to memory",
+        "Idempotent refresh: zero false-positive change detections on no-op runs"
+      ]
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-05-23",
+      "changes": [
+        "Added assets/lotties/ — 27 original Lottie .json files",
+        "Added assets/parse_lotties.py — parser that extracts colors/eases/durations",
+        "Added references/zajno-empirical-data.md — stats from 7,897 keyframes",
+        "Updated SKILL.md and README.md to reference empirical data"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-05-23",
+      "changes": [
+        "Initial release",
+        "8 principles documented",
+        "8 production-ready examples",
+        "5 reference files (tech-stack, easing, timing, interaction-types, framer-port)",
+        "Quality checklist",
+        "Distribution guide"
+      ]
+    }
+  ]
+}
