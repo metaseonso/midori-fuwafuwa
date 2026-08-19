@@ -5,9 +5,14 @@ import Drift from "../components/Drift.astro";
 import { withBase } from "../lib/url";
 
 // Every word on this page is the founders' own, trimmed and never rewritten.
-// Sources: ETHOS.md (studio line, the fantasies line, "we make it for
-// ourselves too", "happy to be reached out to"), PROJECT.md §"dream fields",
-// productions/*/PROJECT.md (one line each). Nothing here is composed.
+// Sources: ETHOS.md §"The studio" and §"What we make things for",
+// PROJECT.md §"dream fields", productions/*/PROJECT.md (one line each).
+// Nothing here is composed.
+//
+// Boundary (founder, 2026-08-19): "don't get lost in your fantasies — let's
+// find ourselves through them" is WHIMSY's voice, not the studio's. It stays
+// on the Whimsy field page, where it already sits with its full framing. Do
+// not promote a production's line to studio level, however strong it reads.
 ---
 
 <Layout
@@ -46,12 +51,11 @@ import { withBase } from "../lib/url";
     <!-- ── stillness ─────────────────────────────────────────────────── -->
     <section class="creed">
       <p class="creed__line reveal">
-        Don&rsquo;t get lost in your fantasies &mdash;<br />
-        <em>let&rsquo;s find ourselves through them.</em>
+        A production studio based out of <em>a Dreamland</em>, shared by
+        Seonso and Grumpy&nbsp;Carrot.
       </p>
       <p class="creed__who reveal" style="--reveal-delay: 140ms;">
-        A production studio based out of a Dreamland,<br />
-        shared by Seonso and Grumpy Carrot.
+        She owns the muse. He owns the genius, as the Greeks say.
       </p>
     </section>
 
@@ -133,7 +137,7 @@ import { withBase } from "../lib/url";
         and gets appreciated over time.
       </p>
       <p class="rest__door reveal" style="--reveal-delay: 260ms;">
-        <a href="mailto:hello@midorifuwafuwa.com">Happy to be reached out to.</a>
+        Happy to be reached out to.
       </p>
       <p class="rest__mark">Midori Fuwafuwa&trade;</p>
 
@@ -289,12 +293,13 @@ import { withBase } from "../lib/url";
     line-height: 1.16;
     letter-spacing: -0.018em;
     color: var(--ink);
-    max-width: 28ch;
+    max-width: 21ch;
+    text-wrap: balance;
     margin: 0;
   }
   .creed__line em {
     font-style: normal;
-    color: var(--mint-deep);
+    color: var(--ink-green);
   }
 
   .creed__who {
@@ -388,14 +393,7 @@ import { withBase } from "../lib/url";
     font-family: var(--font-display);
     font-size: clamp(1.2rem, 2vw, 1.6rem);
   }
-  .rest__door a {
-    color: var(--mint-deep);
-    text-decoration: none;
-    padding-bottom: 0.12em;
-    border-bottom: 2px solid var(--mint);
-    transition: border-color var(--dur-ui) var(--ease-standard);
-  }
-  .rest__door a:hover { border-bottom-color: var(--mint-deep); }
+  .rest__door { color: var(--mint-deep); }
 
   .rest__mark {
     margin: clamp(var(--space-16), 12vh, var(--space-32)) 0 0;

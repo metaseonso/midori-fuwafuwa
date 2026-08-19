@@ -195,6 +195,38 @@ Official logo set.
 
 ---
 
+## 2026-08-19
+
+### Production voice does not become studio voice
+**"Don't get lost in your fantasies — let's find ourselves through them"** belongs to
+**Whimsy**, not to the studio. It was placed on the studio front page and the founder called
+it a boundary crossed. Removed. It stays on the Whimsy field page, where it already sits with
+its full framing ("They say not to get lost in your fantasies, but we know you're a secret
+genius with a method to your madness...").
+
+`ETHOS.md`'s closing note suggests the line "works as the studio's line, not only Whimsy's" and
+asks whether it belongs on the front page. **That question is now answered: no.** The note is
+left as written — it is the founder's own document — but this entry overrides it for build
+purposes.
+
+The general rule: a production's voice stays inside that production's field, however strong the
+line reads. The studio speaks in the words from `ETHOS.md` §"The studio" and §"What we make
+things for".
+
+The front page's studio-level copy is now:
+- "A production studio based out of a Dreamland, shared by Seonso and Grumpy Carrot."
+- "She owns the muse. He owns the genius, as the Greeks say."
+- "We make it for ourselves too." / "...beautifully and thoughtfully, and gets appreciated over time."
+- "Happy to be reached out to."
+
+### The site is a showcase — no live contact channel
+The closing line "Happy to be reached out to." is **plain text, not a `mailto:`**. No address
+has been settled, and shipping a dead one is worse than shipping none. When a real address
+exists, `BUILD_PLAN.md` and [[../site/contact-without-collecting]] still call for a plain
+`mailto:` and no form.
+
+---
+
 ## Parked
 
 | Item | Note |
