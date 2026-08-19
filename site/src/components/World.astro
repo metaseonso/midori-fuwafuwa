@@ -1,0 +1,227 @@
+---
+// One dream field, drifting past at its own depth.
+//
+// Two rules govern this file:
+//
+// 1. The art is never dimmed. The soft round bleed below is an EDGE
+//    treatment — it dissolves the rectangle's corners and nothing else.
+//    The subject holds full opacity out to 76% of the radius. If a world
+//    feels too strong, change its size or position. Never its opacity.
+//
+// 2. Depth is carried by occlusion, not by speed alone. The caller stacks
+//    painted cloud banks in front of and behind these blocks; that is what
+//    makes one world read as nearer than another.
+import { withBase } from "../lib/url";
+
+interface Props {
+  index: string;
+  title: string;
+  line: string;
+  href: string;
+  image: { webp: string; fallback?: string; alt: string; w: number; h: number };
+  flip?: boolean;
+  /** How far this world drifts as you sink past it. Nearer worlds move more. */
+  depth?: number;
+}
+
+const { index, title, line, href, image, flip = false, depth = 1 } = Astro.props;
+---
+
+<article class:list={["world", { "world--flip": flip }]} style={`--depth:${depth};`}>
+  <a class="world__link" href={href}>
+    <figure class="world__art">
+      <img
+        class="world__img"
+        src={image.webp}
+        width={image.w}
+        height={image.h}
+        alt={image.alt}
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+
+    <div class="world__word">
+      <p class="world__index" aria-hidden="true">{index}</p>
+      <h2 class="world__title">{title}</h2>
+      <p class="world__line">{line}</p>
+      <p class="world__go" aria-hidden="true">
+        <svg width="34" height="12" viewBox="0 0 34 12" fill="none">
+          <path
+            d="M1 6h30m0 0l-5-4.5M31 6l-5 4.5"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </p>
+    </div>
+  </a>
+</article>
+
+<style>
+  /* No z-index and no transform on .world itself, deliberately. Either one
+     would make it a stacking context, and then .world__word's z-index could
+     only ever compete inside it — leaving the words trapped under the front
+     cloud banks. The parallax that used to live here now rides the `translate`
+     property on the two children, which composes with their `transform`
+     instead of overwriting it. */
+  .world {
+    position: relative;
+    padding: clamp(var(--space-12), 8vh, var(--space-24)) var(--space-6);
+  }
+
+  .world__link {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(var(--space-8), 5vw, var(--space-24));
+    max-width: 1180px;
+    margin: 0 auto;
+    text-decoration: none;
+    color: inherit;
+  }
+  .world--flip .world__link { direction: rtl; }
+  .world--flip .world__link > * { direction: ltr; }
+
+  /* ---- the art ---- */
+  .world__art {
+    margin: 0;
+    position: relative;
+    z-index: 2;
+  }
+  .world__img {
+    width: 100%;
+    height: auto;
+    /* The bleed: solid across the subject, dissolving only at the
+       rectangle's corners. Painted edges are allowed to end softly; the
+       painting itself stays at full strength. */
+    -webkit-mask-image: radial-gradient(
+      closest-side circle at 50% 50%,
+      #000 54%,
+      rgba(0, 0, 0, 0.86) 72%,
+      rgba(0, 0, 0, 0.4) 88%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      closest-side circle at 50% 50%,
+      #000 54%,
+      rgba(0, 0, 0, 0.86) 72%,
+      rgba(0, 0, 0, 0.4) 88%,
+      transparent 100%
+    );
+  }
+
+  /* ---- the words ----
+     Above the front cloud banks: atmosphere may pass over the painting,
+     never over the reading. */
+  .world__word {
+    position: relative;
+    z-index: 4;
+  }
+
+  .world__index {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    letter-spacing: 0.34em;
+    color: var(--mint-deep);
+    margin: 0 0 var(--space-4);
+  }
+
+  .world__title {
+    font-size: clamp(2.6rem, 6.2vw, 4.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin: 0 0 var(--space-6);
+  }
+
+  .world__line {
+    font-size: clamp(1.0625rem, 1.35vw, 1.3rem);
+    line-height: 1.62;
+    color: var(--wood);
+    max-width: 32ch;
+    margin: 0;
+  }
+
+  .world__go {
+    margin: var(--space-8) 0 0;
+    color: var(--mint-deep);
+  }
+  .world__go svg {
+    transition: transform var(--dur-ui) var(--ease-out-soft);
+  }
+  .world__link:hover .world__go svg { transform: translateX(8px); }
+  .world__link:hover .world__title { color: var(--mint-deep); }
+  .world__title { transition: color var(--dur-ui) var(--ease-standard); }
+
+  .world__link:focus-visible {
+    outline: 3px solid var(--mint-deep);
+    outline-offset: var(--space-6);
+    border-radius: var(--radius-xl);
+  }
+
+  /* ---- sinking past: it settles late, as though held by the air ---- */
+  /* The settle lives entirely inside @supports, deliberately. A browser
+     without scroll-driven animation never sets opacity: 0 on these at all,
+     so it shows the finished block — no JS backstop needed, and nothing can
+     get stuck invisible. Verified against a 1024x8000 non-scrolling render,
+     which is how Googlebot sees the page. */
+  @supports (animation-timeline: view()) {
+    /* Two timelines per element: one settles it on the way in, one keeps it
+       drifting for the whole pass. They touch different properties —
+       `transform` and `translate` — so they compose rather than fight. */
+    html.js .world__art {
+      animation: world-settle linear both, art-drift linear both;
+      animation-timeline: view(), view();
+      animation-range: entry 2% entry 88%, cover;
+    }
+    html.js .world__word {
+      animation: word-settle linear both, word-drift linear both;
+      animation-timeline: view(), view();
+      animation-range: entry 14% entry 96%, cover;
+    }
+  }
+
+  @keyframes world-settle {
+    from { opacity: 0; transform: translateY(70px) scale(0.972); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes word-settle {
+    from { opacity: 0; transform: translateY(46px); }
+    to   { opacity: 1; transform: none; }
+  }
+  /* The art and its words sit at slightly different depths, so the block
+     itself has a little thickness as it goes by. */
+  @keyframes art-drift {
+    from { translate: 0 calc(34px * var(--depth)); }
+    to   { translate: 0 calc(-34px * var(--depth)); }
+  }
+  @keyframes word-drift {
+    from { translate: 0 calc(16px * var(--depth)); }
+    to   { translate: 0 calc(-16px * var(--depth)); }
+  }
+
+  @media (max-width: 860px) {
+    .world__link {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-8);
+      max-width: 34rem;
+    }
+    .world--flip .world__link { direction: ltr; }
+    .world__word { max-width: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js .world__art,
+    html.js .world__word {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+      translate: none !important;
+    }
+    .world__go svg { transition: none; }
+  }
+</style>

@@ -1,229 +1,426 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import DreamSky from "../components/DreamSky.astro";
-import SkyFront from "../components/SkyFront.astro";
-import FieldVignette from "../components/FieldVignette.astro";
+import World from "../components/World.astro";
+import Drift from "../components/Drift.astro";
 import { withBase } from "../lib/url";
+
+// Every word on this page is the founders' own, trimmed and never rewritten.
+// Sources: ETHOS.md (studio line, the fantasies line, "we make it for
+// ourselves too", "happy to be reached out to"), PROJECT.md §"dream fields",
+// productions/*/PROJECT.md (one line each). Nothing here is composed.
 ---
 
 <Layout
-  title="Midori Fuwafuwa™ — The Dreamland"
-  description="Seonso and Grumpy Carrot share a Dreamland. Scroll through the dream world, explore a field, see the forest within."
+  title="Midori Fuwafuwa™ — a production studio based out of a Dreamland"
+  description="A production studio based out of a Dreamland, shared by Seonso and Grumpy Carrot. Midori Fuwa Fuwa, and the different dream fields inside it."
 >
-  <DreamSky />
-
-  <main id="main" class="dreamworld">
-    <!-- arrival: the logo's own art, at scale, with the mascot painting -->
-    <section class="arrival">
-      <div class="arrival__stack">
-        <h1 class="visually-hidden">Midori Fuwafuwa Studio</h1>
-        <img
-          class="arrival__wordmark"
-          src={withBase("/images/mark/wordmark.webp")}
-          width="908" height="423"
-          alt="" loading="eager" decoding="async"
-        />
-        <img
-          class="arrival__mascot"
-          src={withBase("/images/mark/mascot.webp")}
-          width="625" height="650"
-          alt="Midori Fuwafuwa's mascot: a small fluffy mint-green cloud painting at a wooden easel."
-          loading="eager" decoding="async"
-        />
-        <img
-          class="arrival__studio"
-          src={withBase("/images/mark/studio.webp")}
-          width="533" height="145"
-          alt="" loading="eager" decoding="async"
-        />
-      </div>
-
-      <p class="hint" aria-hidden="true">
-        <span>scroll to drift</span>
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <path d="M4 7l6 6 6-6" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" />
+  <main id="main" class="dream">
+    <!-- ── arrival ────────────────────────────────────────────────────
+         The mark, whole and uncropped, on its own cream. The logo's
+         ground is #F4EDD6 (measured off the file's border), so the page
+         is that colour and the image needs no cutout at all. -->
+    <section class="arrival viewport-cap">
+      <h1 class="visually-hidden">Midori Fuwafuwa Studio</h1>
+      <img
+        class="arrival__mark"
+        src={withBase("/images/mark/logo.webp")}
+        width="1200"
+        height="1200"
+        alt="The Midori Fuwafuwa Studio mark: a small mint-green fluffy cloud with rosy cheeks, painting at a wooden easel, beneath its name lettered in an arc."
+        fetchpriority="high"
+        decoding="async"
+      />
+      <p class="arrival__cue" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <path
+            d="M6 10.5l7 6.5 7-6.5"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
       </p>
     </section>
 
-    <section class="note">
-      <p class="reveal">
-        Seonso and Grumpy Carrot share a Dreamland — Midori Fuwa Fuwa, and the
-        different <strong>dream fields</strong> inside it.
+    <!-- ── stillness ─────────────────────────────────────────────────── -->
+    <section class="creed">
+      <p class="creed__line reveal">
+        Don&rsquo;t get lost in your fantasies &mdash;<br />
+        <em>let&rsquo;s find ourselves through them.</em>
+      </p>
+      <p class="creed__who reveal" style="--reveal-delay: 140ms;">
+        A production studio based out of a Dreamland,<br />
+        shared by Seonso and Grumpy Carrot.
       </p>
     </section>
 
-    <FieldVignette
-      index="01"
-      title="The Kits"
-      line="Seonso and Grumpy Carrot's children, on their journey exploring the many worlds around us."
-      href={withBase("/fields/the-kits/")}
-      image={{
-        webp: withBase("/images/fields/the-kits-reference.webp"),
-        fallback: withBase("/images/fields/the-kits-reference.jpg"),
-        width: 640, height: 640,
-        alt: "The Kits: a fox-sage father and fox mother with four fox-eared children in hanbok, walking through a lantern-lit forest.",
-      }}
-    />
+    <!-- ── descent ───────────────────────────────────────────────────
+         Cloud banks hang at fixed depths through this whole stretch.
+         `back` sits behind the worlds, `front` passes over them — that
+         occlusion is what carries depth. -->
+    <section class="descent">
+      {/* Only the four assets whose painted edges dissolve on their own are
+          used here. sky-mid / sky-near / sky-front / cloud-floor fill their
+          frame to the pixel, so they end in a hard rectangle — the fix per
+          DESIGN_SYSTEM §6 is to cut them, not to fade them into haze.
+          sky-far touches its own left and right edges, so it is run wider
+          than the viewport and those edges never come on screen.
 
-    <FieldVignette
-      index="02"
-      title="Whimsy"
-      flip
-      line="A fairy keeps your journals, notes, and doodles safe, then sprinkles fairy dust to turn them into a world you can explore."
-      href={withBase("/fields/whimsy/")}
-      image={{
-        webp: withBase("/images/fields/whimsy-reference.webp"),
-        fallback: withBase("/images/fields/whimsy-reference.jpg"),
-        width: 640, height: 640,
-        alt: "Whimsy: a small fairy with lilac hair and iridescent wings hovering over an open journal, floating islands rising from its pages.",
-      }}
-    />
+          `front` banks are placed over the ART side of each world and never
+          over its words. Depth, not lost legibility. */}
+      <Drift src="sky-far"      w={132} top="5%"  left="50%" drift={8}  layer="back" />
+      <Drift src="motes"        w={22}  top="16%" left="84%" drift={27} layer="back" />
+      <Drift src="island-misty" w={44}  top="27%" left="9%"  drift={23} layer="front" />
+      <Drift src="island-base"  w={54}  top="45%" left="72%" drift={13} layer="back" flip />
+      <Drift src="island-misty" w={38}  top="60%" left="93%" drift={26} layer="front" flip />
+      <Drift src="motes"        w={26}  top="72%" left="18%" drift={30} layer="front" />
+      <Drift src="island-base"  w={50}  top="88%" left="26%" drift={15} layer="back" />
 
-    <FieldVignette
-      index="03"
-      title="Couple App"
-      line="Very us (Midori Fuwa Fuwa)."
-      href={withBase("/fields/couple-app/")}
-      misty
-    />
+      <p class="descent__hinge reveal">
+        Midori Fuwa Fuwa, and exploring the different dream fields.
+      </p>
 
-    <!-- the floor of the dream -->
-    <section class="floor">
-      <img
-        class="floor__cloud"
-        src={withBase("/images/dream/cloud-floor.webp")}
-        alt="" loading="lazy" decoding="async"
+      <World
+        index="01"
+        title="The Kits"
+        line="Seonso and Grumpy Carrot's children, on their journey exploring and learning about the many worlds around us."
+        href={withBase("/fields/the-kits/")}
+        depth={0.7}
+        image={{
+          webp: withBase("/images/fields/the-kits-reference.webp"),
+          alt: "The Kits: a fox father in deep blue hanbok and a fox mother in floral pink, with four ginger fox-eared children, walking a lantern-lit forest path.",
+          w: 640,
+          h: 640,
+        }}
       />
-      <p class="floor__mark">Midori Fuwafuwa&trade;</p>
+
+      <World
+        index="02"
+        title="Whimsy"
+        flip
+        depth={1}
+        line="A magical fairy keeps your journal pages, notes and doodles safe — then sprinkles fairy dust to turn them into a world you can explore."
+        href={withBase("/fields/whimsy/")}
+        image={{
+          webp: withBase("/images/fields/whimsy-reference.webp"),
+          alt: "Whimsy: a lilac-haired fairy with iridescent wings hovering above an open journal, small green islands rising out of its written pages in a trail of gold sparkles.",
+          w: 640,
+          h: 640,
+        }}
+      />
+
+      <World
+        index="03"
+        title="Couple App"
+        line="Very us (Midori Fuwa Fuwa)."
+        href={withBase("/fields/couple-app/")}
+        depth={1.35}
+        image={{
+          webp: withBase("/images/dream/island-misty.webp"),
+          alt: "A soft painted cloud island drifting alone, standing in for a field whose art is not drawn yet.",
+          w: 900,
+          h: 491,
+        }}
+      />
+    </section>
+
+    <!-- ── rest ──────────────────────────────────────────────────────── -->
+    <section class="rest">
+      <p class="rest__line reveal">We make it for ourselves too.</p>
+      <p class="rest__body reveal" style="--reveal-delay: 140ms;">
+        We want to be an entity that makes things beautifully and thoughtfully,
+        and gets appreciated over time.
+      </p>
+      <p class="rest__door reveal" style="--reveal-delay: 260ms;">
+        <a href="mailto:hello@midorifuwafuwa.com">Happy to be reached out to.</a>
+      </p>
+      <p class="rest__mark">Midori Fuwafuwa&trade;</p>
+
+      {/* The floor of the dream. cloud-floor fills its own frame at the
+          bottom and the sides, so it is pinned flush to the page edge and
+          run wider than the viewport — every hard edge it has ends up off
+          screen, and only its soft painted top is ever seen. */}
+      <img
+        class="rest__floor"
+        src={withBase("/images/dream/cloud-floor.webp")}
+        width="1200"
+        height="670"
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+      />
     </section>
   </main>
-
-  <SkyFront />
 </Layout>
 
 <style>
-  .dreamworld { position: relative; z-index: 2; }
+  /* The ground is midori, not beige. A flat cream read as plain paper; this
+     is a mint field that warms as you sink through it — mint at altitude,
+     the logo's own cream at the floor where the painted cloud bank lands.
+     Every stop is a DESIGN_SYSTEM 1 colour or sits between two of them.
 
-  /* ---- arrival ---- */
+     --paper is the logo's measured border colour. It is held ONLY as the
+     radial glow behind the mark, so the mark still sits seamless while the
+     page around it is green. */
+  /* Overscroll rubber-banding exposes the body, not .dream. Without this the
+     page bounces on the old beige. Scoped to this route's stylesheet. */
+  :global(body) { background: #bfe9d3; }
+
+  .dream {
+    --paper: #f4edd6;
+    position: relative;
+    overflow-x: clip;
+    background:
+      linear-gradient(
+        180deg,
+        #bfe9d3 0%,
+        #cbeddc 12%,
+        #d8f0e2 30%,
+        #e3f1e4 52%,
+        #ecf0e2 74%,
+        #f2eede 90%,
+        #f4edd6 100%
+      );
+  }
+
+  /* ── arrival ─────────────────────────────────────────────────────── */
   .arrival {
-    min-height: min(100svh, 900px);
     display: grid;
     place-items: center;
     position: relative;
-    padding: var(--space-8) var(--space-4);
+    padding: var(--space-12) var(--space-6) var(--space-24);
+    isolation: isolate;
   }
-  .arrival__stack {
-    display: grid;
-    justify-items: center;
-    text-align: center;
-  }
-  /* Scale is set against the 900px viewport cap: the whole mark has to sit
-     inside it with air around it, not fill it edge to edge. */
-  .arrival__wordmark { width: min(58vw, 430px); }
-  .arrival__mascot {
-    width: min(34vw, 236px);
-    margin-top: -7%;
-  }
-  .arrival__studio {
-    width: min(19vw, 132px);
-    margin-top: var(--space-3);
-  }
-
-  /* Sinking past the arrival: it rises away and thins out. Starts fully
-     visible, so a crawler at scroll 0 sees the whole thing. */
-  @supports (animation-timeline: scroll()) {
-    html.js .arrival__stack {
-      animation: arrival-away linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0px 760px;
-    }
-    html.js .hint {
-      animation: hint-away linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0px 260px;
-    }
-  }
-  @keyframes arrival-away {
-    from { transform: translateY(0); opacity: 1; }
-    to   { transform: translateY(-80px); opacity: 0; }
-  }
-  @keyframes hint-away { to { opacity: 0; } }
-
-  .hint {
+  /* Warm light behind the mark. It reaches far past the logo's own edge and
+     dissolves long before it stops, so the mark's cream ground and the page
+     never meet at a line. */
+  .arrival::before {
+    content: "";
     position: absolute;
-    bottom: var(--space-8);
     left: 50%;
-    transform: translateX(-50%);
-    display: grid;
-    justify-items: center;
-    gap: var(--space-1);
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: var(--text-xs);
-    letter-spacing: 0.14em;
-    color: var(--text-muted);
-  }
-  html.js .hint svg { animation: nod 1.9s var(--ease-standard) infinite; }
-  @keyframes nod {
-    0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(5px); }
-  }
-
-  /* ---- the drifting line ---- */
-  .note {
-    min-height: min(62svh, 560px);
-    display: grid;
-    place-items: center;
-    padding: var(--space-8) var(--space-4);
-  }
-  .note p {
-    max-width: 32ch;
-    text-align: center;
-    font-size: clamp(1.2rem, 2.2vw, 1.7rem);
-    line-height: 1.45;
-    margin: 0;
-  }
-  .note strong { color: var(--accent-text); font-weight: 700; }
-
-  /* ---- the floor ---- */
-  .floor {
-    min-height: min(80svh, 700px);
-    display: grid;
-    place-items: end center;
-    position: relative;
-    padding-bottom: var(--space-16);
-  }
-  .floor__cloud {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 150vw;
-    max-width: none;
-    transform: translateX(-50%);
+    top: 50%;
+    width: min(132vw, 1040px);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(
+      closest-side circle,
+      var(--paper) 0 30%,
+      rgba(244, 237, 214, 0.9) 46%,
+      rgba(244, 237, 214, 0.5) 68%,
+      rgba(244, 237, 214, 0) 100%
+    );
+    z-index: -1;
     pointer-events: none;
-    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%);
-    mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%);
   }
-  .floor__mark {
-    position: relative;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: var(--text-sm);
-    letter-spacing: 0.12em;
-    color: var(--text-muted);
+
+  .arrival__mark {
+    width: min(86vw, 74vh, 620px);
+    height: auto;
+    /* The outermost 3% is empty cream margin — the artwork's own bounding
+       box starts at 13% on the sides and 5% at the foot. Feathering only
+       that margin dissolves any last hairline against the flat page
+       colour without touching a pixel of the painting. */
+    -webkit-mask-image: radial-gradient(
+      closest-side circle at 50% 50%,
+      #000 92%,
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      closest-side circle at 50% 50%,
+      #000 92%,
+      transparent 100%
+    );
+  }
+
+  .arrival__cue {
+    position: absolute;
+    bottom: var(--space-12);
+    left: 50%;
+    transform: translateX(-50%);
     margin: 0;
+    color: var(--sage);
+  }
+
+  /* Weightless, and a little late: the mark hangs before it lifts away. */
+  @supports (animation-timeline: scroll()) {
+    html.js .arrival__mark {
+      animation: mark-away linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 78vh;
+    }
+    html.js .arrival__cue {
+      animation: cue-away linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 22vh;
+    }
+  }
+  @keyframes mark-away {
+    0%   { transform: translateY(0) scale(1); opacity: 1; }
+    38%  { transform: translateY(-8px) scale(1.005); opacity: 1; }
+    100% { transform: translateY(-84px) scale(0.955); opacity: 0; }
+  }
+  @keyframes cue-away {
+    to { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  }
+
+  html.js .arrival__cue svg { animation: breathe 3.4s var(--ease-standard) infinite; }
+  @keyframes breathe {
+    0%, 100% { transform: translateY(0); opacity: 0.75; }
+    50%      { transform: translateY(6px); opacity: 1; }
+  }
+
+  /* ── stillness ───────────────────────────────────────────────────── */
+  .creed {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: var(--space-12);
+    padding: clamp(var(--space-24), 18vh, 200px) var(--space-6);
+  }
+
+  .creed__line {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.1rem, 5.4vw, 4.1rem);
+    line-height: 1.16;
+    letter-spacing: -0.018em;
+    color: var(--ink);
+    max-width: 28ch;
+    margin: 0;
+  }
+  .creed__line em {
+    font-style: normal;
+    color: var(--mint-deep);
+  }
+
+  .creed__who {
+    font-size: clamp(1.0625rem, 1.5vw, 1.35rem);
+    line-height: 1.62;
+    color: var(--wood);
+    margin: 0;
+  }
+
+  /* ── descent ─────────────────────────────────────────────────────── */
+  .descent {
+    position: relative;
+    z-index: 1;
+    padding: 0 0 clamp(var(--space-16), 10vh, var(--space-32));
+  }
+
+  .descent__hinge {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.15rem, 1.9vw, 1.6rem);
+    line-height: 1.5;
+    color: var(--mint-deep);
+    max-width: 40ch;
+    margin: 0 auto clamp(var(--space-16), 9vh, var(--space-24));
+    padding: 0 var(--space-6);
+  }
+
+  /* ── rest ────────────────────────────────────────────────────────── */
+  .rest {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    text-align: center;
+    gap: var(--space-8);
+    padding: clamp(var(--space-24), 16vh, 190px) var(--space-6)
+             clamp(380px, 48vh, 560px);
+    overflow: clip;
+  }
+  .rest > p { position: relative; z-index: 2; }
+
+  .rest__floor {
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    width: 118vw;
+    max-width: none;
+    height: auto;
+    transform: translateX(-50%);
+    z-index: 0;
+    pointer-events: none;
+  }
+  @supports (animation-timeline: scroll()) {
+    html.js .rest__floor {
+      animation: floor-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 70%;
+    }
+  }
+  @keyframes floor-rise {
+    from { transform: translateX(-50%) translateY(52px); }
+    to   { transform: translateX(-50%) translateY(0); }
+  }
+  @media (max-width: 860px) {
+    .rest__floor { width: 210vw; }
+  }
+
+  .rest__line {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2rem, 4.6vw, 3.4rem);
+    line-height: 1.18;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .rest__body {
+    font-size: clamp(1.0625rem, 1.5vw, 1.35rem);
+    line-height: 1.62;
+    color: var(--wood);
+    max-width: 36ch;
+    margin: 0;
+  }
+
+  .rest__door {
+    margin: var(--space-6) 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+  }
+  .rest__door a {
+    color: var(--mint-deep);
+    text-decoration: none;
+    padding-bottom: 0.12em;
+    border-bottom: 2px solid var(--mint);
+    transition: border-color var(--dur-ui) var(--ease-standard);
+  }
+  .rest__door a:hover { border-bottom-color: var(--mint-deep); }
+
+  .rest__mark {
+    margin: clamp(var(--space-16), 12vh, var(--space-32)) 0 0;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    letter-spacing: 0.22em;
+    /* Sits over the cloud floor, so it cannot be --sage: DESIGN_SYSTEM 1.6
+       clears sage for large text only. --mint-deep holds ~5:1 on both the
+       cream and the cloud. */
+    color: var(--mint-deep);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    html.js .arrival__stack,
-    html.js .hint,
-    html.js .hint svg {
+    html.js .arrival__mark,
+    html.js .arrival__cue,
+    html.js .arrival__cue svg {
       animation: none !important;
-      transform: none !important;
       opacity: 1 !important;
+      transform: none !important;
     }
-    .hint { transform: translateX(-50%) !important; }
+    .arrival__cue { transform: translateX(-50%) !important; }
+    /* The floor only loses its animation. Blanket `transform: none` here
+       would also strip its centring translate, and out-specify any attempt
+       to put it back. */
+    html.js .rest__floor { animation: none !important; }
   }
 </style>
