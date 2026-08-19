@@ -2,6 +2,8 @@
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import FieldHero from "../../components/FieldHero.astro";
+import DreamSky from "../../components/DreamSky.astro";
+import SkyFront from "../../components/SkyFront.astro";
 import ForestEntry from "../../components/ForestEntry.astro";
 import { sortForestEntries } from "../../lib/forestSort";
 import { withBase } from "../../lib/url";
@@ -15,14 +17,14 @@ const recaps = sortForestEntries(
   title="The Kits — a dream field | Midori Fuwafuwa™"
   description="Seonso and Grumpy Carrot's children, on their journey exploring and learning about the many worlds around us. Midori Fuwafuwa's first production."
 >
-  <main id="main">
+  <DreamSky />
+
+  <main id="main" class="field">
     <FieldHero
       eyebrow="Dream field 01"
       title="The Kits"
       tagline="Seonso and Grumpy Carrot's children, on their journey exploring and learning about the many worlds around us."
-      accent="--wood"
       image={{
-        avif: withBase("/images/fields/the-kits-reference.avif"),
         webp: withBase("/images/fields/the-kits-reference.webp"),
         fallback: withBase("/images/fields/the-kits-reference.jpg"),
         width: 640,
@@ -57,9 +59,13 @@ const recaps = sortForestEntries(
       )}
     </section>
   </main>
+
+  <SkyFront />
 </Layout>
 
 <style>
+  .field { position: relative; z-index: 2; }
+
   .field-body {
     max-width: 42rem;
     margin: 0 auto;

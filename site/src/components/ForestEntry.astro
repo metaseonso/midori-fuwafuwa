@@ -72,6 +72,13 @@ const { type, title, season, summary, scenes } = Astro.props;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
 
+  /* offset, never simultaneous: sibling scenes surface 70ms apart on the
+     JS-observer reveal path (the view() path staggers naturally by scroll) */
+  .forest-entry__scenes > :global(.scene:nth-child(2)) { --reveal-delay: 70ms; }
+  .forest-entry__scenes > :global(.scene:nth-child(3)) { --reveal-delay: 140ms; }
+  .forest-entry__scenes > :global(.scene:nth-child(4)) { --reveal-delay: 210ms; }
+  .forest-entry__scenes > :global(.scene:nth-child(n + 5)) { --reveal-delay: 280ms; }
+
   /* ---- sapling: a single small, young growth ---- */
   .forest-entry--sapling {
     max-width: 30rem;
@@ -83,19 +90,23 @@ const { type, title, season, summary, scenes } = Astro.props;
     grid-template-columns: 1fr;
   }
   .forest-entry--sapling .scene {
-    box-shadow: none;
-    background: color-mix(in srgb, var(--ground-warm) 70%, transparent);
+    background: radial-gradient(ellipse 120% 90% at 50% 40%,
+      rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 100%);
   }
 
   /* ---- grove: fuller, wider, a shared clearing ---- */
+  /* a grove reads as more grown: wider, denser, and sitting in its own
+     pool of warm seasonal light rather than on a panel */
   .forest-entry--grove {
-    max-width: 56rem;
+    max-width: 58rem;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-    background: color-mix(in srgb, var(--season-ground) 70%, var(--ground));
-    box-shadow: var(--shadow-md);
-    padding: var(--space-8);
+    padding: var(--space-12) var(--space-8);
+    background: radial-gradient(ellipse 90% 80% at 50% 50%,
+      color-mix(in srgb, var(--season-ground) 92%, white) 0%,
+      color-mix(in srgb, var(--season-ground) 55%, transparent) 55%,
+      transparent 100%);
   }
   .forest-entry--grove .forest-entry__title {
     font-size: var(--text-3xl);
@@ -105,6 +116,7 @@ const { type, title, season, summary, scenes } = Astro.props;
     height: 56px;
   }
   .forest-entry--grove .scene {
-    box-shadow: var(--shadow-sm);
+    background: radial-gradient(ellipse 120% 90% at 50% 40%,
+      rgba(255,255,255,.8) 0%, rgba(255,255,255,.3) 60%, rgba(255,255,255,0) 100%);
   }
 </style>

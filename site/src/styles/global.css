@@ -8,6 +8,12 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Lenis drives programmatic scrolls itself; native smooth-behavior would
+   fight the lerp. These are the library's own recommended rules. */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
 body {
   margin: 0;
   background: var(--ground);
@@ -34,6 +40,15 @@ p {
 img, svg {
   display: block;
   max-width: 100%;
+}
+
+/* The HTML width/height attributes are presentational hints, so an image
+   sized only by CSS width keeps its intrinsic pixel height and stretches.
+   height:auto hands sizing back to the intrinsic aspect ratio — the
+   attributes still do their real job of reserving space against layout
+   shift. */
+img[width][height] {
+  height: auto;
 }
 
 a {
@@ -106,6 +121,7 @@ html.js .reveal.is-visible {
   transform: none;
   transition: opacity var(--dur-enter) var(--ease-out-soft),
               transform var(--dur-enter) var(--ease-out-soft);
+  transition-delay: var(--reveal-delay, 0ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -122,9 +138,17 @@ html.js .reveal.is-visible {
     animation-timeline: view();
     animation-range: entry;
   }
+  /* islands surface with a touch of scale — bigger arrival, same range */
+  html.js .reveal--vignette {
+    animation-name: reveal-vignette;
+  }
 }
 @keyframes reveal-in {
   from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes reveal-vignette {
+  from { opacity: 0; transform: translateY(56px) scale(0.965); }
   to   { opacity: 1; transform: none; }
 }
 

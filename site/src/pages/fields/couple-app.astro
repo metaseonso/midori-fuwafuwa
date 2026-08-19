@@ -2,6 +2,8 @@
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import FieldHero from "../../components/FieldHero.astro";
+import DreamSky from "../../components/DreamSky.astro";
+import SkyFront from "../../components/SkyFront.astro";
 import ForestEntry from "../../components/ForestEntry.astro";
 import { sortForestEntries } from "../../lib/forestSort";
 
@@ -14,12 +16,13 @@ const recaps = sortForestEntries(
   title="A dream still taking shape — a dream field | Midori Fuwafuwa™"
   description="A couple app. Very us (Midori Fuwa Fuwa) — rooted in Seonso and Grumpy Carrot's own relationship. No name yet, no art yet."
 >
-  <main id="main">
+  <DreamSky />
+
+  <main id="main" class="field">
     <FieldHero
       eyebrow="Dream field 03 · unnamed"
       title="A dream still taking shape"
       tagline="Very us (Midori Fuwa Fuwa)."
-      accent="--sage-pale"
       misty
     />
 
@@ -44,9 +47,13 @@ const recaps = sortForestEntries(
       )}
     </section>
   </main>
+
+  <SkyFront />
 </Layout>
 
 <style>
+  .field { position: relative; z-index: 2; }
+
   .field-body {
     max-width: 42rem;
     margin: 0 auto;

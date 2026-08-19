@@ -1,0 +1,115 @@
+---
+// The Dreamland sky — painted cloud layers (generated in the logo's own
+// style by tools/gen.py) drifting at three depths as the visitor sinks.
+//
+// Two rules learned by looking at it rendered:
+//
+// 1. The sky must NOT be cream. The clouds are cream-and-blush, so a cream
+//    sky makes them vanish. The ground here runs mint at altitude down to
+//    blush near the floor — every stop from DESIGN_SYSTEM §1 — which is
+//    what lets pale clouds read at all.
+// 2. Clouds live at the top and bottom edges only. The middle band stays
+//    open, because that is where the content is and the restraint is the
+//    whole point (case-study-01: mystique-forward, minimal chrome).
+//
+// Decorative only. Real content sits above this in normal flow, so a
+// non-scrolling crawler still reads a complete page.
+import { withBase } from "../lib/url";
+
+const layers = [
+  { key: "far", src: "sky-far", top: "-2%", drift: "-4%", op: 0.5, w: 128 },
+  { key: "mid", src: "sky-mid", top: "68%", drift: "-11%", op: 0.55, w: 138 },
+  { key: "near", src: "sky-near", top: "84%", drift: "-22%", op: 0.7, w: 150 },
+];
+---
+
+<div class="sky" aria-hidden="true">
+  <div class="sky__ground"></div>
+  <div class="sky__glow"></div>
+
+  {layers.map((l) => (
+    <img
+      class:list={["sky__layer", `sky__layer--${l.key}`]}
+      src={withBase(`/images/dream/${l.src}.webp`)}
+      alt=""
+      loading="eager"
+      decoding="async"
+      style={`top:${l.top}; --drift:${l.drift}; --op:${l.op}; --w:${l.w}vw;`}
+    />
+  ))}
+</div>
+
+<style>
+  .sky {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* A dawn sky, entirely from the logo's palette: mint at altitude,
+     warming to blush at the floor of the dream. */
+  .sky__ground {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      #BEECCE 0%,
+      #CFEEDC 22%,
+      #DFF1E4 44%,
+      #EFF2E8 64%,
+      #FBF1EC 82%,
+      #FCF2F4 100%
+    );
+  }
+
+  /* a soft luminous centre, so the middle of the frame reads as light
+     rather than as empty gradient */
+  .sky__glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 62% 44% at 50% 40%,
+      rgba(255, 253, 248, 0.42) 0%,
+      rgba(255, 253, 248, 0.16) 48%,
+      transparent 74%
+    );
+  }
+
+  .sky__layer {
+    position: absolute;
+    left: 50%;
+    width: var(--w);
+    max-width: none;
+    height: auto;
+    opacity: var(--op);
+    transform: translateX(-50%);
+    will-change: transform;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .sky__layer {
+      animation: sky-drift linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+  @keyframes sky-drift {
+    from { transform: translateX(-50%) translateY(0); }
+    to   { transform: translateX(-50%) translateY(var(--drift)); }
+  }
+
+  @media (max-width: 768px) {
+    .sky__layer { --w: 210vw; }
+    .sky__layer--far  { --drift: -2%; }
+    .sky__layer--mid  { --drift: -5.5%; }
+    .sky__layer--near { --drift: -11%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sky__layer {
+      animation: none !important;
+      transform: translateX(-50%) !important;
+    }
+  }
+</style>

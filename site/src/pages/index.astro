@@ -1,8 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import CloudBand from "../components/CloudBand.astro";
-import MascotSlot from "../components/MascotSlot.astro";
-import FieldCard from "../components/FieldCard.astro";
+import DreamSky from "../components/DreamSky.astro";
+import SkyFront from "../components/SkyFront.astro";
+import FieldVignette from "../components/FieldVignette.astro";
 import { withBase } from "../lib/url";
 ---
 
@@ -10,208 +10,220 @@ import { withBase } from "../lib/url";
   title="Midori Fuwafuwa™ — The Dreamland"
   description="Seonso and Grumpy Carrot share a Dreamland. Scroll through the dream world, explore a field, see the forest within."
 >
-  <main id="main">
-    <section class="hero viewport-cap">
-      <div class="hero__sky" aria-hidden="true"></div>
+  <DreamSky />
 
-      <CloudBand variant="far" fill="var(--mint-highlight)" class="hero__layer hero__layer--far" />
-      <CloudBand variant="mid" fill="var(--mint-soft)" class="hero__layer hero__layer--mid" />
-
-      <div class="hero__content">
-        <div class="text-surface reveal">
-          <h1>Midori Fuwafuwa™</h1>
-          <p class="hero__tagline">Scroll through the dream world. Explore a field. See the forest within.</p>
-        </div>
-        <MascotSlot class="hero__mascot" />
+  <main id="main" class="dreamworld">
+    <!-- arrival: the logo's own art, at scale, with the mascot painting -->
+    <section class="arrival">
+      <div class="arrival__stack">
+        <h1 class="visually-hidden">Midori Fuwafuwa Studio</h1>
+        <img
+          class="arrival__wordmark"
+          src={withBase("/images/mark/wordmark.webp")}
+          width="908" height="423"
+          alt="" loading="eager" decoding="async"
+        />
+        <img
+          class="arrival__mascot"
+          src={withBase("/images/mark/mascot.webp")}
+          width="625" height="650"
+          alt="Midori Fuwafuwa's mascot: a small fluffy mint-green cloud painting at a wooden easel."
+          loading="eager" decoding="async"
+        />
+        <img
+          class="arrival__studio"
+          src={withBase("/images/mark/studio.webp")}
+          width="533" height="145"
+          alt="" loading="eager" decoding="async"
+        />
       </div>
 
-      <CloudBand variant="near" fill="var(--mint)" class="hero__layer hero__layer--near" />
-      <div class="hero__mist" aria-hidden="true"></div>
-
-      <div class="hero__scrollhint" aria-hidden="true">
+      <p class="hint" aria-hidden="true">
         <span>scroll to drift</span>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M4 7l6 6 6-6" stroke="var(--wood)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M4 7l6 6 6-6" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" />
         </svg>
-      </div>
-    </section>
-
-    <section class="intro">
-      <p class="reveal intro__text">
-        Seonso and Grumpy Carrot share a Dreamland — Midori Fuwa Fuwa, and the different
-        <strong>dream fields</strong> inside it.
       </p>
     </section>
 
-    <section class="fields" aria-label="Dream fields">
-      <FieldCard
-        title="The Kits"
-        description="Seonso and Grumpy Carrot's children, on their journey exploring the many worlds around us."
-        href={withBase("/fields/the-kits/")}
-        accent="--wood"
-        image={{
-          avif: withBase("/images/fields/the-kits-reference.avif"),
-          webp: withBase("/images/fields/the-kits-reference.webp"),
-          fallback: withBase("/images/fields/the-kits-reference.jpg"),
-          width: 640,
-          height: 640,
-          alt: "Direction reference for The Kits: a fox-sage father and fox mother with four fox-eared children in hanbok, walking through a lantern-lit forest.",
-        }}
+    <section class="note">
+      <p class="reveal">
+        Seonso and Grumpy Carrot share a Dreamland — Midori Fuwa Fuwa, and the
+        different <strong>dream fields</strong> inside it.
+      </p>
+    </section>
+
+    <FieldVignette
+      index="01"
+      title="The Kits"
+      line="Seonso and Grumpy Carrot's children, on their journey exploring the many worlds around us."
+      href={withBase("/fields/the-kits/")}
+      image={{
+        webp: withBase("/images/fields/the-kits-reference.webp"),
+        fallback: withBase("/images/fields/the-kits-reference.jpg"),
+        width: 640, height: 640,
+        alt: "The Kits: a fox-sage father and fox mother with four fox-eared children in hanbok, walking through a lantern-lit forest.",
+      }}
+    />
+
+    <FieldVignette
+      index="02"
+      title="Whimsy"
+      flip
+      line="A fairy keeps your journals, notes, and doodles safe, then sprinkles fairy dust to turn them into a world you can explore."
+      href={withBase("/fields/whimsy/")}
+      image={{
+        webp: withBase("/images/fields/whimsy-reference.webp"),
+        fallback: withBase("/images/fields/whimsy-reference.jpg"),
+        width: 640, height: 640,
+        alt: "Whimsy: a small fairy with lilac hair and iridescent wings hovering over an open journal, floating islands rising from its pages.",
+      }}
+    />
+
+    <FieldVignette
+      index="03"
+      title="Couple App"
+      line="Very us (Midori Fuwa Fuwa)."
+      href={withBase("/fields/couple-app/")}
+      misty
+    />
+
+    <!-- the floor of the dream -->
+    <section class="floor">
+      <img
+        class="floor__cloud"
+        src={withBase("/images/dream/cloud-floor.webp")}
+        alt="" loading="lazy" decoding="async"
       />
-      <FieldCard
-        title="Whimsy"
-        description="A fairy keeps your journals, notes, and doodles safe, then sprinkles fairy dust to turn them into a world you can explore."
-        href={withBase("/fields/whimsy/")}
-        accent="--blush"
-        image={{
-          avif: withBase("/images/fields/whimsy-reference.avif"),
-          webp: withBase("/images/fields/whimsy-reference.webp"),
-          fallback: withBase("/images/fields/whimsy-reference.jpg"),
-          width: 640,
-          height: 640,
-          alt: "Direction reference for Whimsy: a small fairy with lilac hair and iridescent wings, hovering over an open journal from which floating islands rise in gold sparkle trails.",
-        }}
-      />
-      <FieldCard
-        title="Couple App"
-        description="Very us (Midori Fuwa Fuwa)."
-        href={withBase("/fields/couple-app/")}
-        accent="--sage-pale"
-        misty
-      />
+      <p class="floor__mark">Midori Fuwafuwa&trade;</p>
     </section>
   </main>
+
+  <SkyFront />
 </Layout>
 
 <style>
-  .hero {
-    position: relative;
-    overflow: hidden;
+  .dreamworld { position: relative; z-index: 2; }
+
+  /* ---- arrival ---- */
+  .arrival {
+    min-height: min(100svh, 900px);
     display: grid;
     place-items: center;
-  }
-  .hero__sky {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, var(--ground-warm) 0%, var(--ground) 55%, var(--mint-highlight) 100%);
-  }
-
-  .hero__layer--far { top: 4%; z-index: 1; opacity: 0.7; }
-  .hero__layer--mid { top: 28%; z-index: 2; opacity: 0.85; }
-  .hero__layer--near { bottom: -4%; z-index: 4; opacity: 0.95; }
-
-  .hero__content {
     position: relative;
-    z-index: 3;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-6);
     padding: var(--space-8) var(--space-4);
+  }
+  .arrival__stack {
+    display: grid;
+    justify-items: center;
     text-align: center;
   }
+  /* Scale is set against the 900px viewport cap: the whole mark has to sit
+     inside it with air around it, not fill it edge to edge. */
+  .arrival__wordmark { width: min(58vw, 430px); }
+  .arrival__mascot {
+    width: min(34vw, 236px);
+    margin-top: -7%;
+  }
+  .arrival__studio {
+    width: min(19vw, 132px);
+    margin-top: var(--space-3);
+  }
 
-  .text-surface {
-    background: color-mix(in srgb, var(--ground) 92%, transparent);
-    border-radius: var(--radius-xl);
-    padding: var(--space-6) var(--space-8);
-    box-shadow: var(--shadow-sm);
-    max-width: 36rem;
+  /* Sinking past the arrival: it rises away and thins out. Starts fully
+     visible, so a crawler at scroll 0 sees the whole thing. */
+  @supports (animation-timeline: scroll()) {
+    html.js .arrival__stack {
+      animation: arrival-away linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0px 760px;
+    }
+    html.js .hint {
+      animation: hint-away linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0px 260px;
+    }
   }
-  .hero h1 {
-    font-size: var(--text-4xl);
-    line-height: var(--lh-4xl);
-    margin: 0 0 var(--space-3);
+  @keyframes arrival-away {
+    from { transform: translateY(0); opacity: 1; }
+    to   { transform: translateY(-80px); opacity: 0; }
   }
-  .hero__tagline {
-    font-size: var(--text-lg);
-    line-height: var(--lh-lg);
+  @keyframes hint-away { to { opacity: 0; } }
+
+  .hint {
+    position: absolute;
+    bottom: var(--space-8);
+    left: 50%;
+    transform: translateX(-50%);
+    display: grid;
+    justify-items: center;
+    gap: var(--space-1);
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-xs);
+    letter-spacing: 0.14em;
+    color: var(--text-muted);
+  }
+  html.js .hint svg { animation: nod 1.9s var(--ease-standard) infinite; }
+  @keyframes nod {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(5px); }
+  }
+
+  /* ---- the drifting line ---- */
+  .note {
+    min-height: min(62svh, 560px);
+    display: grid;
+    place-items: center;
+    padding: var(--space-8) var(--space-4);
+  }
+  .note p {
+    max-width: 32ch;
+    text-align: center;
+    font-size: clamp(1.2rem, 2.2vw, 1.7rem);
+    line-height: 1.45;
+    margin: 0;
+  }
+  .note strong { color: var(--accent-text); font-weight: 700; }
+
+  /* ---- the floor ---- */
+  .floor {
+    min-height: min(80svh, 700px);
+    display: grid;
+    place-items: end center;
+    position: relative;
+    padding-bottom: var(--space-16);
+  }
+  .floor__cloud {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 150vw;
+    max-width: none;
+    transform: translateX(-50%);
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 100%);
+  }
+  .floor__mark {
+    position: relative;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    letter-spacing: 0.12em;
     color: var(--text-muted);
     margin: 0;
   }
 
-  .hero__mascot {
-    width: min(60vw, 280px);
-  }
-
-  .hero__mist {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    pointer-events: none;
-    background: radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--ground) 55%, transparent) 0%, transparent 60%);
-  }
-
-  .hero__scrollhint {
-    position: absolute;
-    bottom: var(--space-6);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 6;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-1);
-    font-family: var(--font-display);
-    font-size: var(--text-xs);
-    color: var(--wood);
-    letter-spacing: 0.04em;
-  }
-  html.js .hero__scrollhint svg {
-    animation: bob-hint 1.6s var(--ease-standard) infinite;
-  }
-  @keyframes bob-hint {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(6px); }
-  }
-
-  /* ---- parallax: scroll(root) timeline, capped range matching the hero's
-     900px max-height. @supports guard → static resting layout otherwise. ---- */
-  @supports (animation-timeline: scroll()) {
-    .hero__layer--far {
-      animation: drift-far linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0px 700px;
-    }
-    .hero__layer--mid {
-      animation: drift-mid linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0px 700px;
-    }
-    .hero__layer--near {
-      animation: drift-near linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0px 700px;
-    }
-  }
-  @keyframes drift-far { from { transform: translateY(0); } to { transform: translateY(24px); } }
-  @keyframes drift-mid { from { transform: translateY(0); } to { transform: translateY(56px); } }
-  @keyframes drift-near { from { transform: translateY(0); } to { transform: translateY(110px); } }
-
   @media (prefers-reduced-motion: reduce) {
-    .hero__layer--far, .hero__layer--mid, .hero__layer--near {
+    html.js .arrival__stack,
+    html.js .hint,
+    html.js .hint svg {
       animation: none !important;
+      transform: none !important;
+      opacity: 1 !important;
     }
-  }
-
-  .intro {
-    max-width: 42rem;
-    margin: 0 auto;
-    padding: var(--space-24) var(--space-4);
-  }
-  .intro__text {
-    font-size: var(--text-lg);
-    line-height: var(--lh-lg);
-    text-align: center;
-    color: var(--text-primary);
-  }
-
-  .fields {
-    max-width: 68rem;
-    margin: 0 auto;
-    padding: 0 var(--space-4) var(--space-32);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: var(--space-8);
+    .hint { transform: translateX(-50%) !important; }
   }
 </style>

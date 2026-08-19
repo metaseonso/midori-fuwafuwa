@@ -2,6 +2,8 @@
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import FieldHero from "../../components/FieldHero.astro";
+import DreamSky from "../../components/DreamSky.astro";
+import SkyFront from "../../components/SkyFront.astro";
 import ForestEntry from "../../components/ForestEntry.astro";
 import { sortForestEntries } from "../../lib/forestSort";
 import { withBase } from "../../lib/url";
@@ -15,14 +17,14 @@ const recaps = sortForestEntries(
   title="Whimsy — a dream field | Midori Fuwafuwa™"
   description="A fairy keeps your journals, notes, and doodles safe, then sprinkles fairy dust to turn them into a world you can explore."
 >
-  <main id="main">
+  <DreamSky />
+
+  <main id="main" class="field">
     <FieldHero
       eyebrow="Dream field 02 · working title"
       title="Whimsy"
       tagline="A fairy keeps your journals, notes, and doodles safe, then sprinkles fairy dust to turn them into a whimsical world you can explore."
-      accent="--blush"
       image={{
-        avif: withBase("/images/fields/whimsy-reference.avif"),
         webp: withBase("/images/fields/whimsy-reference.webp"),
         fallback: withBase("/images/fields/whimsy-reference.jpg"),
         width: 640,
@@ -64,9 +66,13 @@ const recaps = sortForestEntries(
       )}
     </section>
   </main>
+
+  <SkyFront />
 </Layout>
 
 <style>
+  .field { position: relative; z-index: 2; }
+
   .field-body {
     max-width: 42rem;
     margin: 0 auto;
