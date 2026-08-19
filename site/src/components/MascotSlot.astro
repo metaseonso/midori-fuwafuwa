@@ -1,0 +1,48 @@
+---
+// The mascot slot — a fixed-aspect region reserved for the mascot art.
+// Per brand/DESIGN_SYSTEM.md §5: the only place ease-bounce and ambient
+// loops are permitted, because this is what carries the studio's personality.
+import { withBase } from "../lib/url";
+
+interface Props {
+  class?: string;
+  loading?: "eager" | "lazy";
+}
+const { class: className, loading = "eager" } = Astro.props;
+---
+
+<div class={`mascot-slot ${className ?? ""}`}>
+  <picture>
+    <source srcset={withBase("/images/mascot/mascot-with-easel.avif")} type="image/avif" />
+    <source srcset={withBase("/images/mascot/mascot-with-easel.webp")} type="image/webp" />
+    <img
+      src={withBase("/images/mascot/mascot-with-easel.png")}
+      width="610"
+      height="600"
+      alt="Midori Fuwafuwa's mascot: a small, fluffy mint-green cloud with a soft blush-pink cheek, holding a paintbrush at a wooden easel."
+      loading={loading}
+      decoding="async"
+    />
+  </picture>
+</div>
+
+<style>
+  .mascot-slot {
+    aspect-ratio: 610 / 600;
+    display: grid;
+    place-items: center;
+  }
+  .mascot-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  html.js .mascot-slot img {
+    animation: mascot-bob var(--dur-ambient) var(--ease-bounce) infinite alternate;
+  }
+  @keyframes mascot-bob {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-10px); }
+  }
+</style>

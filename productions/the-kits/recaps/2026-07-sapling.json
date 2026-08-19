@@ -1,0 +1,16 @@
+{
+  "type": "sapling",
+  "period": "2026-07",
+  "title": "July 2026",
+  "season": "summer",
+  "summary": "A quiet month — groundwork, not growth you can see yet.",
+  "scenes": [
+    {
+      "prose": "Some months are roots, not shoots. July went into groundwork that won't show until later.",
+      "mood": "resting",
+      "sourceLabel": "notes",
+      "sourceHref": "#",
+      "asset": { "kind": "bud", "alt": "A single blush-pink bud, not yet open — marking a quiet month of groundwork." }
+    }
+  ]
+}

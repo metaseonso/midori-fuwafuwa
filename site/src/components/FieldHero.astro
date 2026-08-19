@@ -1,0 +1,183 @@
+---
+// The capped, full-bleed opening of a dream field. Production accent tints
+// a few decorative spots only — text stays on the studio's own tokens.
+// brand/DESIGN_SYSTEM.md: "the studio system always wins."
+import { withBase } from "../lib/url";
+
+interface ImageProps {
+  avif: string;
+  webp: string;
+  fallback: string;
+  width: number;
+  height: number;
+  alt: string;
+}
+interface Props {
+  eyebrow: string;
+  title: string;
+  tagline: string;
+  accent: string; // token name, e.g. "--wood"
+  image?: ImageProps;
+  misty?: boolean;
+}
+const { eyebrow, title, tagline, accent, image, misty = false } = Astro.props;
+---
+
+<header class="field-hero viewport-cap" style={`--field-accent: var(${accent});`}>
+  <div class="field-hero__backdrop" aria-hidden="true"></div>
+
+  <a href={withBase("/")} class="field-hero__back">← the Dreamland</a>
+
+  <div class="field-hero__grid">
+    <div class="field-hero__text text-surface reveal">
+      <p class="field-hero__eyebrow">{eyebrow}</p>
+      <h1>{title}</h1>
+      <p class="field-hero__tagline">{tagline}</p>
+    </div>
+
+    <div class="field-hero__art">
+      {image && (
+        <picture>
+          <source srcset={image.avif} type="image/avif" />
+          <source srcset={image.webp} type="image/webp" />
+          <img
+            src={image.fallback}
+            width={image.width}
+            height={image.height}
+            alt={image.alt}
+            loading="eager"
+            decoding="async"
+          />
+        </picture>
+      )}
+      {misty && (
+        <div class="field-hero__mist-art" aria-hidden="true">
+          <div class="mist-blob mist-blob--1"></div>
+          <div class="mist-blob mist-blob--2"></div>
+          <div class="mist-blob mist-blob--3"></div>
+        </div>
+      )}
+    </div>
+  </div>
+</header>
+
+<style>
+  .field-hero {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    align-items: center;
+    padding: var(--space-16) var(--space-4);
+  }
+  .field-hero__backdrop {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, var(--ground-warm) 0%, var(--ground) 45%, var(--field-accent) 180%);
+    opacity: 0.55;
+  }
+
+  .field-hero__back {
+    position: relative;
+    z-index: 2;
+    align-self: start;
+    justify-self: start;
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    background: color-mix(in srgb, var(--ground) 85%, transparent);
+    margin-bottom: var(--space-6);
+  }
+  .field-hero__back:hover,
+  .field-hero__back:focus-visible {
+    color: var(--text-primary);
+  }
+
+  .field-hero__grid {
+    position: relative;
+    z-index: 2;
+    max-width: 72rem;
+    margin: 0 auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    align-items: center;
+  }
+  @media (min-width: 800px) {
+    .field-hero__grid {
+      grid-template-columns: 1.1fr 0.9fr;
+    }
+  }
+
+  .text-surface {
+    background: color-mix(in srgb, var(--ground) 92%, transparent);
+    border-radius: var(--radius-xl);
+    padding: var(--space-8);
+    box-shadow: var(--shadow-sm);
+  }
+  .field-hero__eyebrow {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    margin: 0 0 var(--space-2);
+  }
+  .field-hero h1 {
+    font-size: var(--text-4xl);
+    line-height: var(--lh-4xl);
+    margin: 0 0 var(--space-3);
+  }
+  .field-hero__tagline {
+    font-size: var(--text-lg);
+    line-height: var(--lh-lg);
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .field-hero__art {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    aspect-ratio: 4 / 3;
+  }
+  .field-hero__art picture,
+  .field-hero__art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .field-hero__mist-art {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at 50% 50%, var(--ground-warm), var(--field-accent) 160%);
+  }
+  .mist-blob {
+    position: absolute;
+    border-radius: var(--radius-full);
+    background: radial-gradient(circle, color-mix(in srgb, var(--field-accent) 70%, white), transparent 72%);
+    filter: blur(6px);
+  }
+  .mist-blob--1 { width: 55%; height: 55%; opacity: 0.9; }
+  .mist-blob--2 { width: 35%; height: 35%; top: 15%; left: 10%; opacity: 0.7; }
+  .mist-blob--3 { width: 30%; height: 30%; bottom: 12%; right: 12%; opacity: 0.6; }
+
+  html.js .mist-blob {
+    animation: mist-drift var(--dur-ambient) var(--ease-standard) infinite alternate;
+  }
+  .mist-blob--2 { animation-delay: -0.8s; }
+  .mist-blob--3 { animation-delay: -1.6s; }
+  @keyframes mist-drift {
+    from { transform: translateY(0) scale(1); }
+    to   { transform: translateY(-8px) scale(1.03); }
+  }
+</style>

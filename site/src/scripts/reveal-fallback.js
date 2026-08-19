@@ -1,22 +1,33 @@
 /*
-  Progressive-enhancement fallback for browsers that run JS but don't support
-  animation-timeline: view() yet. Where the CSS scroll-driven reveal in
-  global.css is supported, this script does nothing — the compositor handles
-  it. Where it isn't, this uses IntersectionObserver to add .is-visible.
-  Any failure here defaults to showing everything, never hiding it.
+  Correctness backstop for .reveal elements, in three layers:
+  1. CSS animation-timeline: view() in global.css is the primary mechanism —
+     smooth native reveal during normal scrolling, where supported.
+  2. IntersectionObserver here catches anything the CSS path misses — it has
+     been observed to leave elements stuck at opacity:0 when the viewport is
+     much taller than the page (a crawler expanding its viewport to the full
+     page height and never scrolling reproduces this reliably).
+  3. A short timeout force-reveals anything still hidden, in case neither of
+     the above ran for some reason (e.g. a backgrounded/non-rendered tab).
+  Nothing should ever stay invisible because one mechanism failed.
 */
 try {
-  const supportsScrollTimeline =
-    typeof CSS !== "undefined" && CSS.supports && CSS.supports("animation-timeline: view()");
-
   const reveals = document.querySelectorAll(".reveal");
 
-  if (!supportsScrollTimeline && "IntersectionObserver" in window) {
+  const reveal = (el) => {
+    el.classList.add("is-visible");
+    // A stuck/degenerate scroll-timeline animation can keep controlling
+    // opacity even after .is-visible sets it via a transition — animations
+    // override the normal cascade for the properties they animate. Killing
+    // the animation outright removes that conflict.
+    el.style.animation = "none";
+  };
+
+  if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
+            reveal(entry.target);
             io.unobserve(entry.target);
           }
         }
@@ -24,9 +35,18 @@ try {
       { rootMargin: "0px 0px -10% 0px", threshold: 0.15 }
     );
     reveals.forEach((el) => io.observe(el));
-  } else if (!supportsScrollTimeline) {
-    reveals.forEach((el) => el.classList.add("is-visible"));
+  } else {
+    reveals.forEach(reveal);
   }
+
+  setTimeout(() => {
+    reveals.forEach((el) => {
+      if (parseFloat(getComputedStyle(el).opacity) < 0.99) reveal(el);
+    });
+  }, 1500);
 } catch (e) {
-  document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-visible"));
+  document.querySelectorAll(".reveal").forEach((el) => {
+    el.classList.add("is-visible");
+    el.style.animation = "none";
+  });
 }

@@ -1,0 +1,30 @@
+{
+  "type": "sapling",
+  "period": "2026-04",
+  "title": "April 2026",
+  "season": "spring",
+  "summary": "The mother found her colours, and the family started to breathe.",
+  "scenes": [
+    {
+      "prose": "Grumpy Carrot's own warmth lent itself to the fox mother, without the two ever being mistaken for one another.",
+      "mood": "resembling",
+      "sourceLabel": "direction ref",
+      "sourceHref": "#",
+      "asset": { "kind": "bud", "alt": "A blush-pink bud, marking the fox mother's design taking form." }
+    },
+    {
+      "prose": "A woven basket, a floral hanbok in teal and cream — small props that make a family look lived-in.",
+      "mood": "tending",
+      "sourceLabel": "direction ref",
+      "sourceHref": "#",
+      "asset": { "kind": "leaf", "alt": "A sage-green leaf, marking the small props added to the family's world." }
+    },
+    {
+      "prose": "First pass at \"the many worlds\" — not written yet, just felt: what it's like to step through into somewhere new.",
+      "mood": "wondering",
+      "sourceLabel": "direction ref",
+      "sourceHref": "#",
+      "asset": { "kind": "sprout", "alt": "A pale-mint sprout, marking the earliest feel of the many-worlds premise." }
+    }
+  ]
+}

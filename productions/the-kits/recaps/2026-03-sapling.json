@@ -1,0 +1,30 @@
+{
+  "type": "sapling",
+  "period": "2026-03",
+  "title": "March 2026",
+  "season": "spring",
+  "summary": "Planting season — the family found their shape.",
+  "scenes": [
+    {
+      "prose": "The father's silhouette settled first: black hair, a white fox tail, a deep blue hanbok with tassels that actually hang right.",
+      "mood": "settling",
+      "sourceLabel": "direction ref",
+      "sourceHref": "#",
+      "asset": { "kind": "sprout", "alt": "A single pale-mint sprout, marking the first shape the fox father took." }
+    },
+    {
+      "prose": "Four kits sketched in, each holding something — a scroll, a basket, a small hand reaching for a bigger one.",
+      "mood": "gathering",
+      "sourceLabel": "direction ref",
+      "sourceHref": "#",
+      "asset": { "kind": "leaf", "alt": "A sage-green leaf, marking the four kits gathered into one family group." }
+    },
+    {
+      "prose": "The forest itself arrived last: lanterns, fireflies, a canopy heavy enough to hold real dark under it.",
+      "mood": "deepening",
+      "sourceLabel": "direction ref",
+      "sourceHref": "#",
+      "asset": { "kind": "branch", "alt": "A wood-brown branch with three buds, marking the forest setting taking hold." }
+    }
+  ]
+}

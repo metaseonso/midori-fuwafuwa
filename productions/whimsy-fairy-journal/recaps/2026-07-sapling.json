@@ -1,0 +1,23 @@
+{
+  "type": "sapling",
+  "period": "2026-07",
+  "title": "July 2026",
+  "season": "summer",
+  "summary": "The pitch found its own voice, and it's staying.",
+  "scenes": [
+    {
+      "prose": "\"Don't get lost in your fantasies — let's FIND ourselves THROUGH them.\" The line that reframes the whole product arrived, and it's the founders' own.",
+      "mood": "declaring",
+      "sourceLabel": "notes",
+      "sourceHref": "#",
+      "asset": { "kind": "sprout", "alt": "A pale-mint sprout, marking the pitch's own voice taking hold." }
+    },
+    {
+      "prose": "Open question, held on purpose: an app, a Telegram bot, or something else? The fairy doesn't mind waiting for an answer.",
+      "mood": "wondering",
+      "sourceLabel": "notes",
+      "sourceHref": "#",
+      "asset": { "kind": "bud", "alt": "A single blush-pink bud, not yet open — marking the platform question still waiting." }
+    }
+  ]
+}

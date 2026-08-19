@@ -83,9 +83,13 @@ button:focus-visible,
   border: 0;
 }
 
-/* ---- guardrail 1: cap every fullscreen element ---- */
+/* ---- guardrail 1: cap every fullscreen element ----
+   min-height alone loses to max-height when min > max (CSS spec: min-height
+   wins that conflict), which silently defeats the cap on Googlebot's
+   expanded viewport. Clamping min-height through min() first means it can
+   never exceed the cap, so the two properties never fight. ---- */
 .viewport-cap {
-  min-height: 100svh;
+  min-height: min(100svh, 900px);
   max-height: 900px;
 }
 
@@ -116,10 +120,34 @@ html.js .reveal.is-visible {
   html.js .reveal {
     animation: reveal-in linear both;
     animation-timeline: view();
-    animation-range: entry 0% cover 25%;
+    animation-range: entry;
   }
 }
 @keyframes reveal-in {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: none; }
+}
+
+/* ---- entering a field: sinking in. transform + opacity only ---- */
+@keyframes sink-in {
+  from { opacity: 0; transform: translateY(-18px) scale(1.01); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes sink-out {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(18px) scale(0.99); }
+}
+::view-transition-old(root) {
+  animation: var(--dur-scene) var(--ease-standard) both sink-out;
+}
+::view-transition-new(root) {
+  animation: var(--dur-scene) var(--ease-out-soft) both sink-in;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }

@@ -1,0 +1,23 @@
+{
+  "type": "sapling",
+  "period": "2026-06",
+  "title": "June 2026",
+  "season": "summer",
+  "summary": "The fairy found her wings — literally.",
+  "scenes": [
+    {
+      "prose": "Lilac hair with flowers worked into it, wings that actually read as translucent — the fairy stopped being a placeholder and started being her.",
+      "mood": "arriving",
+      "sourceLabel": "direction ref",
+      "sourceHref": "#",
+      "asset": { "kind": "blossom", "alt": "A four-petal blush blossom with a mint centre, marking the fairy's design arriving." }
+    },
+    {
+      "prose": "The floating islands got their first real logic: each one a page, each page a place.",
+      "mood": "connecting",
+      "sourceLabel": "direction ref",
+      "sourceHref": "#",
+      "asset": { "kind": "leaf", "alt": "A sage-green leaf, marking the floating islands' logic connecting to the journal pages." }
+    }
+  ]
+}

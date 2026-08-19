@@ -1,0 +1,23 @@
+{
+  "type": "sapling",
+  "period": "2026-06",
+  "title": "June 2026",
+  "season": "summer",
+  "summary": "Summer opened with a question: how many worlds, and what's in them?",
+  "scenes": [
+    {
+      "prose": "A shortlist of \"worlds\" started forming — not settled, but the shape of the question got clearer.",
+      "mood": "exploring",
+      "sourceLabel": "notes",
+      "sourceHref": "#",
+      "asset": { "kind": "sprout", "alt": "A pale-mint sprout, marking the first shortlist of worlds." }
+    },
+    {
+      "prose": "Character ages and names are still open. The kits are known by what they're holding, not yet by what they're called.",
+      "mood": "open",
+      "sourceLabel": "notes",
+      "sourceHref": "#",
+      "asset": { "kind": "leaf", "alt": "A sage-green leaf, marking the kits' names and ages left open." }
+    }
+  ]
+}

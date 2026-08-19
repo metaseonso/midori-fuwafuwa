@@ -1,0 +1,30 @@
+{
+  "type": "sapling",
+  "period": "2026-05",
+  "title": "May 2026",
+  "season": "spring",
+  "summary": "Direction locked: watercolour, warmth, and Korean visual language throughout.",
+  "scenes": [
+    {
+      "prose": "The reference sheet earned its keep — called \"quite apt\" and kept as the compass for everything after.",
+      "mood": "confirming",
+      "sourceLabel": "direction ref",
+      "sourceHref": "#",
+      "asset": { "kind": "blossom", "alt": "A four-petal blush blossom with a mint centre, marking the direction reference being confirmed." }
+    },
+    {
+      "prose": "Hanbok silhouettes, tassel and norigae ornament, the fox-spirit lineage — a visual vocabulary, not just a look.",
+      "mood": "rooting",
+      "sourceLabel": "direction ref",
+      "sourceHref": "#",
+      "asset": { "kind": "branch", "alt": "A wood-brown branch with three buds, marking the visual vocabulary taking root." }
+    },
+    {
+      "prose": "Still no words. The pictures know the family before the story does.",
+      "mood": "waiting",
+      "sourceLabel": "direction ref",
+      "sourceHref": "#",
+      "asset": { "kind": "leaf", "alt": "A single sage-green leaf, marking a month spent waiting on the story." }
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+---
+// One beat of a Forest consolidation. Fully data-driven — a new month
+// changes only the JSON in productions/<slug>/recaps/, never this file.
+interface Props {
+  prose: string;
+  mood: string;
+  sourceLabel: string;
+  sourceHref: string;
+  asset: { kind: "sprout" | "leaf" | "bud" | "blossom" | "branch"; alt: string };
+}
+const { prose, mood, sourceLabel, sourceHref, asset } = Astro.props;
+---
+
+<article class="scene reveal">
+  <div class="scene__icon" role="img" aria-label={asset.alt}>
+    {asset.kind === "sprout" && (
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 56V30" stroke="var(--sage)" stroke-width="3" stroke-linecap="round" />
+        <path d="M32 32c0-10 8-16 16-16 0 10-8 16-16 16Z" fill="var(--mint)" />
+        <path d="M32 36c0-8-7-13-13-13 0 8 7 13 13 13Z" fill="var(--mint-soft)" />
+      </svg>
+    )}
+    {asset.kind === "leaf" && (
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 10c14 0 22 10 22 22-14 0-22-10-22-22-14 0-22 10-22 22 0-12 8-22 22-22Z" fill="var(--sage)" />
+        <path d="M32 12v40" stroke="var(--sage-pale)" stroke-width="2" stroke-linecap="round" />
+      </svg>
+    )}
+    {asset.kind === "bud" && (
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 54V26" stroke="var(--sage)" stroke-width="3" stroke-linecap="round" />
+        <ellipse cx="32" cy="20" rx="12" ry="16" fill="var(--blush)" />
+        <ellipse cx="32" cy="20" rx="6" ry="10" fill="var(--blush-pale)" />
+      </svg>
+    )}
+    {asset.kind === "blossom" && (
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <g fill="var(--blush)">
+          <circle cx="32" cy="18" r="10" />
+          <circle cx="48" cy="32" r="10" />
+          <circle cx="32" cy="46" r="10" />
+          <circle cx="16" cy="32" r="10" />
+        </g>
+        <circle cx="32" cy="32" r="8" fill="var(--mint-deep)" />
+      </svg>
+    )}
+    {asset.kind === "branch" && (
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M8 48c12 4 20-2 24-14M32 34c6-10 16-12 24-8" stroke="var(--wood)" stroke-width="3" stroke-linecap="round" fill="none" />
+        <circle cx="14" cy="46" r="4" fill="var(--sage)" />
+        <circle cx="34" cy="30" r="4" fill="var(--mint)" />
+        <circle cx="54" cy="24" r="4" fill="var(--sage)" />
+      </svg>
+    )}
+  </div>
+
+  <p class="scene__prose">{prose}</p>
+
+  <div class="scene__meta">
+    <span class="scene__mood">{mood}</span>
+    <a class="scene__source" href={sourceHref}>{sourceLabel}</a>
+  </div>
+</article>
+
+<style>
+  .scene {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    height: 100%;
+  }
+  .scene__icon svg {
+    width: 40px;
+    height: 40px;
+  }
+  .scene__prose {
+    margin: 0;
+    font-size: var(--text-base);
+    line-height: var(--lh-base);
+    flex: 1;
+  }
+  .scene__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+  }
+  .scene__mood {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--accent-text);
+    text-transform: lowercase;
+    background: var(--mint-highlight);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+  }
+  .scene__source {
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-decoration-color: var(--sage);
+  }
+</style>

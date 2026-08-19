@@ -1,0 +1,37 @@
+{
+  "type": "grove",
+  "period": "2026-spring",
+  "title": "Spring 2026",
+  "season": "spring",
+  "summary": "Three months of planting turned into a family that holds together on the page — the story is still to come.",
+  "scenes": [
+    {
+      "prose": "Spring's whole job was arrival: a father, a mother, four kits, and the forest they stand in.",
+      "mood": "arriving",
+      "sourceLabel": "season synthesis",
+      "sourceHref": "#",
+      "asset": { "kind": "branch", "alt": "A wood-brown branch with three buds, marking the whole family's arrival across the season." }
+    },
+    {
+      "prose": "Nothing about The Kits is written yet — but everyone in it now has a face.",
+      "mood": "grounding",
+      "sourceLabel": "season synthesis",
+      "sourceHref": "#",
+      "asset": { "kind": "blossom", "alt": "A four-petal blush blossom with a mint centre, marking the family's design settling in." }
+    },
+    {
+      "prose": "The resemblance between the artist personas and the characters they made is on purpose. The reason is still theirs to tell.",
+      "mood": "keeping",
+      "sourceLabel": "season synthesis",
+      "sourceHref": "#",
+      "asset": { "kind": "sprout", "alt": "A pale-mint sprout, marking a detail deliberately held for later." }
+    },
+    {
+      "prose": "Next season's job: give this family something to walk toward.",
+      "mood": "looking ahead",
+      "sourceLabel": "season synthesis",
+      "sourceHref": "#",
+      "asset": { "kind": "leaf", "alt": "A sage-green leaf, marking the season closing on an open question." }
+    }
+  ]
+}

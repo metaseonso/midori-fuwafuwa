@@ -1,0 +1,117 @@
+---
+// The gateway into one production's Field, from the hub.
+// brand/DESIGN_SYSTEM.md §5: radius-xl, shadow-md, ground. Baloo 2 title at
+// text-2xl, one line of description, a character-art slot. Hover lifts
+// translateY(-4px) over dur-ui. No scale — scaling illustration reveals
+// raster softness.
+interface ImageProps {
+  avif: string;
+  webp: string;
+  fallback: string;
+  width: number;
+  height: number;
+  alt: string;
+}
+interface Props {
+  title: string;
+  description: string;
+  href: string;
+  accent: string; // a token name, e.g. "--wood"
+  image?: ImageProps;
+  misty?: boolean;
+}
+const { title, description, href, accent, image, misty = false } = Astro.props;
+---
+
+<a class="field-card reveal" href={href} style={`--field-accent: var(${accent});`}>
+  <div class="field-card__art" class:list={{ "field-card__art--misty": misty }}>
+    {image && (
+      <picture>
+        <source srcset={image.avif} type="image/avif" />
+        <source srcset={image.webp} type="image/webp" />
+        <img
+          src={image.fallback}
+          width={image.width}
+          height={image.height}
+          alt={image.alt}
+          loading="lazy"
+          decoding="async"
+        />
+      </picture>
+    )}
+    {misty && <div class="field-card__mist" aria-hidden="true"></div>}
+  </div>
+  <div class="field-card__body">
+    <h3 class="field-card__title">{title}</h3>
+    <p class="field-card__desc">{description}</p>
+    <span class="field-card__cta">Step in →</span>
+  </div>
+</a>
+
+<style>
+  .field-card {
+    display: block;
+    text-decoration: none;
+    color: var(--text-primary);
+    background: var(--ground);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: transform var(--dur-ui) var(--ease-standard),
+                box-shadow var(--dur-ui) var(--ease-standard),
+                border-color var(--dur-ui) var(--ease-standard);
+  }
+  .field-card:hover,
+  .field-card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--field-accent);
+  }
+
+  .field-card__art {
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(180deg, var(--ground-warm), var(--field-accent) 220%);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .field-card__art picture,
+  .field-card__art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .field-card__art--misty {
+    background: radial-gradient(circle at 50% 40%, var(--ground-warm), var(--field-accent) 140%);
+  }
+  .field-card__mist {
+    width: 70%;
+    height: 70%;
+    border-radius: var(--radius-full);
+    background: radial-gradient(circle, color-mix(in srgb, var(--field-accent) 60%, white), transparent 70%);
+    filter: blur(2px);
+    opacity: 0.8;
+  }
+
+  .field-card__body {
+    padding: var(--space-6);
+  }
+  .field-card__title {
+    font-size: var(--text-2xl);
+    line-height: var(--lh-2xl);
+    margin: 0 0 var(--space-2);
+  }
+  .field-card__desc {
+    font-size: var(--text-base);
+    color: var(--text-muted);
+    margin: 0 0 var(--space-4);
+  }
+  .field-card__cta {
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--accent-text);
+    font-size: var(--text-sm);
+  }
+</style>
