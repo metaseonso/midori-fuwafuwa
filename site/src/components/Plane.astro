@@ -1,27 +1,33 @@
 ---
-// One plane of the arrival's layered parallax.
+// One plane of the arrival's parallax.
 //
-// Built to the reference the founder supplied, point for point:
+// Three independent channels of motion, deliberately kept on three different
+// CSS properties so they compose on the compositor instead of overwriting one
+// another:
 //
-//  1. LAYERING — distinct transparent painted planes, stacked by z-index so
-//     depth comes from occlusion. `back` sits behind the mark, `front` passes
-//     over it.
-//  2. POSITIONING — absolute inside the hero, decoupled from document flow so
-//     each plane's coordinates are independent.
-//  3. VELOCITY — each plane carries a Framer-style speed factor, where 100% is
-//     normal page speed. The reference's Position_y = Initial − (ScrollDelta ×
-//     Speed) is expressed here as its CSS equivalent: the plane already moves
-//     with the page at 100%, so the keyframe adds back the shortfall,
-//     (1 − speed) × range, downward. Speed 0.3 reads distant; 0.95 reads near.
-//  4. CONSTRAINT — --range is the hero's own capped height, min(100svh, 900px),
-//     the same value .viewport-cap pins the section to. Tying the travel to the
-//     cap rather than to raw viewport height is what stops the planes tearing
-//     open gaps when the frame resizes — and it is the same cap that keeps
-//     Googlebot's expanded viewport from stretching this section.
+//   transform  — scroll parallax. The reference's speed-factor model.
+//   translate  — the cursor camera. The whole scene shifts as the visitor
+//                moves, each plane by an amount set by its depth.
+//   the img's own translate — ambient float. A slow, endless drift that runs
+//                whether or not anyone is doing anything.
 //
-// These plates fill their frames to the pixel, so every one is run wider than
-// the viewport and the hero clips them. Their hard edges never come on screen.
-// Nothing here is faded to hide an edge — DESIGN_SYSTEM §6.
+// The ambient channel is the important one. Before it, every bit of motion on
+// this page was welded to the scrollbar: nothing moved unless you dragged it,
+// which is what made the page feel mechanical and made a smoothed scroll read
+// as lag. A page that breathes on its own does not depend on input to feel
+// alive.
+//
+// The scroll model, from the supplied reference:
+//  1. LAYERING   — transparent painted planes stacked by z-index; depth is
+//                  occlusion, not just speed.
+//  2. POSITIONING— absolute inside the hero, out of document flow.
+//  3. VELOCITY   — a Framer-style speed factor where 100% is page speed.
+//                  Position_y = Initial − (ScrollDelta × Speed) becomes its CSS
+//                  equivalent: the plane already travels with the page at 100%,
+//                  so the keyframe adds the shortfall (1 − speed) back down.
+//  4. CONSTRAINT — --range is the hero's capped height, min(100svh, 900px),
+//                  the same value .viewport-cap pins the section to, so travel
+//                  can never tear a gap open on resize.
 import { withBase } from "../lib/url";
 
 interface Props {
@@ -34,11 +40,24 @@ interface Props {
   left?: string;
   layer?: "back" | "front";
   flip?: boolean;
+  /** How far this plane answers the cursor, in px. Nearer planes move more. */
+  depth?: number;
+  /** Seconds for one ambient breath. 0 = none. Longer reads heavier. */
+  drift?: number;
 }
 
-const { src, speed, w, top, left = "50%", layer = "back", flip = false } = Astro.props;
+const {
+  src,
+  speed,
+  w,
+  top,
+  left = "50%",
+  layer = "back",
+  flip = false,
+  depth = 10,
+  drift = 26,
+} = Astro.props;
 
-// Intrinsic sizes, so each plane reserves its box before the art lands.
 const SIZES: Record<string, [number, number]> = {
   "sky-far": [1200, 670],
   "sky-mid": [1200, 670],
@@ -50,19 +69,28 @@ const SIZES: Record<string, [number, number]> = {
   motes: [760, 760],
 };
 const [iw, ih] = SIZES[src];
+
+// Negative delay starts each plane part-way through its own breath, so they
+// never rise and fall together.
+const offset = -((drift * 0.37 * (iw % 7)) % drift).toFixed(2);
 ---
 
-<img
+<div
   class:list={["plane", `plane--${layer}`]}
-  src={withBase(`/images/dream/${src}.webp`)}
-  width={iw}
-  height={ih}
-  alt=""
-  aria-hidden="true"
-  loading="eager"
-  decoding="async"
-  style={`--speed:${speed}; --w:${w}vw; --top:${top}; --left:${left}; --sx:${flip ? -1 : 1};`}
-/>
+  style={`--speed:${speed}; --w:${w}vw; --top:${top}; --left:${left}; --depth:${depth}px;`}
+>
+  <img
+    class:list={["plane__art", { "plane__art--breathes": drift > 0 }]}
+    src={withBase(`/images/dream/${src}.webp`)}
+    width={iw}
+    height={ih}
+    alt=""
+    aria-hidden="true"
+    loading="eager"
+    decoding="async"
+    style={`--sx:${flip ? -1 : 1}; --drift:${drift}s; --delay:${offset}s;`}
+  />
+</div>
 
 <style>
   .plane {
@@ -70,20 +98,44 @@ const [iw, ih] = SIZES[src];
     top: var(--top);
     left: var(--left);
     width: var(--w);
-    max-width: none;
-    height: auto;
     pointer-events: none;
-    /* scaleX last, so the mirror happens about the plane's own centre after
-       it has been positioned. */
-    transform: translate(-50%, -50%) scaleX(var(--sx));
-    will-change: transform;
+    transform: translate(-50%, -50%);
+    /* The cursor camera. --pointer-x/y are written once per frame on the
+       section by the arrival's pointer loop, so every plane reads the same
+       two numbers and only its own depth differs. */
+    translate: calc(var(--pointer-x, 0) * var(--depth))
+      calc(var(--pointer-y, 0) * var(--depth));
+    /* No will-change: a scroll-driven animation already promotes this, and
+       pinning a layer for every plane only costs GPU memory. */
   }
 
-  /* Behind the warm glow that holds the mark seamless, so distant cloud reads
-     as cloud dissolving into the light rather than as texture over the logo. */
   .plane--back { z-index: -2; }
-  /* In front of the mark. This is the occlusion that carries the depth. */
   .plane--front { z-index: 1; }
+
+  .plane__art {
+    width: 100%;
+    height: auto;
+    max-width: none;
+    scale: var(--sx) 1;
+  }
+  /* Ambient float is opt-in per plane, and deliberately NOT given to the big
+     distant plates. Measured: breathing all four put ~10% of frames over 20ms
+     at idle, because the two back plates are ~1.7 megapixels each and a
+     forever-running animation recomposites them every single frame. Distant
+     cloud should barely move anyway — that is what distance looks like — so
+     the near, small planes breathe and the far, huge ones hold. Back to 0%. */
+  .plane__art--breathes {
+    animation: breathe var(--drift) ease-in-out var(--delay) infinite;
+  }
+
+  /* Ambient float: the page is alive whether or not anyone touches it. */
+  @keyframes breathe {
+    0%,
+    100% { translate: 0 0; }
+    25%  { translate: 1.1% -2.2%; }
+    50%  { translate: 0 -3%; }
+    75%  { translate: -1.1% -1.4%; }
+  }
 
   @supports (animation-timeline: scroll()) {
     html.js .plane {
@@ -94,8 +146,7 @@ const [iw, ih] = SIZES[src];
   }
   @keyframes plane-speed {
     to {
-      transform: translate(-50%, calc(-50% + (1 - var(--speed)) * var(--range)))
-        scaleX(var(--sx));
+      transform: translate(-50%, calc(-50% + (1 - var(--speed)) * var(--range)));
     }
   }
 
@@ -106,9 +157,12 @@ const [iw, ih] = SIZES[src];
   }
 
   @media (prefers-reduced-motion: reduce) {
+    /* DESIGN_SYSTEM §4: ambient loops stop entirely. Not slowed — stopped. */
     html.js .plane {
       animation: none !important;
-      transform: translate(-50%, -50%) scaleX(var(--sx)) !important;
+      transform: translate(-50%, -50%) !important;
+      translate: none !important;
     }
+      .plane__art { animation: none !important; translate: none !important; }
   }
 </style>

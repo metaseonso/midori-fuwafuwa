@@ -48,10 +48,10 @@ import { withBase } from "../lib/url";
                               version used sky-near and put a hard horizontal
                               seam across the top of the hero.
           Nothing is faded to hide an edge — DESIGN_SYSTEM §6. */}
-      <Plane src="sky-far"      speed={0.76} w={118} top="10%" left="46%" layer="back" />
-      <Plane src="sky-mid"      speed={0.85} w={126} top="46%" left="56%" layer="back" flip />
-      <Plane src="island-base"  speed={0.95} w={40}  top="76%" left="89%" layer="front" flip />
-      <Plane src="island-misty" speed={0.98} w={44}  top="86%" left="12%" layer="front" />
+      <Plane src="sky-far"      speed={0.76} w={118} top="10%" left="46%" layer="back"  depth={7}  drift={0} />
+      <Plane src="sky-mid"      speed={0.85} w={126} top="46%" left="56%" layer="back"  depth={13} drift={0} flip />
+      <Plane src="island-base"  speed={0.95} w={40}  top="76%" left="89%" layer="front" depth={30} drift={21} flip />
+      <Plane src="island-misty" speed={0.98} w={44}  top="86%" left="12%" layer="front" depth={38} drift={17} />
 
       <Mark />
       <p class="arrival__cue" aria-hidden="true">
