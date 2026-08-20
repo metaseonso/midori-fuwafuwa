@@ -69,7 +69,7 @@ import { withBase } from "../lib/url";
     /* `translate` and `rotate`, not `transform` — the pointer lean has to
        compose with the scroll-driven lift, and the individual properties
        apply alongside `transform` rather than replacing it. */
-    will-change: translate, rotate;
+    will-change: translate;
   }
 
   .mark__img {
@@ -106,7 +106,6 @@ import { withBase } from "../lib/url";
     translate: var(--x) var(--y);
     rotate: var(--r);
     pointer-events: none;
-    filter: blur(7px);
     background:
       radial-gradient(closest-side ellipse at 38% 42%, var(--c1) 0%, transparent 72%),
       radial-gradient(closest-side ellipse at 66% 61%, var(--c2) 0%, transparent 70%),
@@ -138,7 +137,7 @@ import { withBase } from "../lib/url";
      before it builds anything. This is the belt to that braces. */
   @media (prefers-reduced-motion: reduce) {
     .mark__paint { display: none; }
-    .mark__lean { translate: none !important; rotate: none !important; animation: none !important; }
+    .mark__lean { translate: none !important; animation: none !important; }
   }
 </style>
 
@@ -159,11 +158,12 @@ import { withBase } from "../lib/url";
     ["rgb(208 177 149 / 0.72)", "rgb(248 209 209 / 0.70)"], // tan · blush
     ["rgb(218 219 206 / 0.85)", "rgb(190 236 206 / 0.75)"], // sage-pale · mint
   ];
-  const POOL = 20;
+  const POOL = 14;
   const SPACING = 46; // px of travel between marks — a brush, not a firehose
-  const LEAN = 13; // px, the most the mark ever moves
-  const TILT = 1.1; // deg, the most it ever leans
-  const EASE = 0.055; // heavily damped: it arrives late, the way it should
+  const LEAN = 10; // px, the most the mark ever moves
+  // The tilt is gone. Rotating the mark made it wobble rather than hang, and
+  // it is the studio's logo — it should not appear to swing.
+  const EASE = 0.11; // damped, but it still answers you. 0.055 read as lag.
 
   function init(root: HTMLElement) {
     const paint = root.querySelector<HTMLElement>(".mark__paint")!;
@@ -214,7 +214,6 @@ import { withBase } from "../lib/url";
       cx += (tx - cx) * EASE;
       cy += (ty - cy) * EASE;
       lean.style.translate = `${cx * LEAN}px ${cy * LEAN}px`;
-      lean.style.rotate = `${cx * TILT}deg`;
       if (Math.abs(tx - cx) > 0.001 || Math.abs(ty - cy) > 0.001) {
         requestAnimationFrame(frame);
       } else {
