@@ -1,93 +1,38 @@
 ---
 import { getCollection } from "astro:content";
-import Layout from "../../layouts/Layout.astro";
-import FieldHero from "../../components/FieldHero.astro";
-import DreamSky from "../../components/DreamSky.astro";
-import SkyFront from "../../components/SkyFront.astro";
-import ForestEntry from "../../components/ForestEntry.astro";
+import Field from "../../layouts/Field.astro";
 import { sortForestEntries } from "../../lib/forestSort";
 import { withBase } from "../../lib/url";
 
+// Copy is the founders' own, trimmed: productions/the-kits/PROJECT.md.
 const recaps = sortForestEntries(
   await getCollection("recaps", ({ id }) => id.startsWith("the-kits/"))
 );
 ---
 
-<Layout
+<Field
   title="The Kits — a dream field | Midori Fuwafuwa™"
   description="Seonso and Grumpy Carrot's children, on their journey exploring and learning about the many worlds around us. Midori Fuwafuwa's first production."
+  eyebrow="Dream field 01"
+  name="The Kits"
+  tagline="Seonso and Grumpy Carrot's children, on their journey exploring and learning about the many worlds around us."
+  recaps={recaps}
+  image={{
+    webp: withBase("/images/fields/the-kits-reference.webp"),
+    width: 640,
+    height: 640,
+    alt: "Direction reference for The Kits: a fox-sage father in a deep blue hanbok and a fox mother in a pink floral hanbok, leading four fox-eared children — one carrying a scroll, one an infant in a basket carrier — through a lantern-lit forest with fireflies and butterflies.",
+  }}
 >
-  <DreamSky />
-
-  <main id="main" class="field">
-    <FieldHero
-      eyebrow="Dream field 01"
-      title="The Kits"
-      tagline="Seonso and Grumpy Carrot's children, on their journey exploring and learning about the many worlds around us."
-      image={{
-        webp: withBase("/images/fields/the-kits-reference.webp"),
-        fallback: withBase("/images/fields/the-kits-reference.jpg"),
-        width: 640,
-        height: 640,
-        alt: "Direction reference for The Kits: a fox-sage father in a deep blue hanbok and a fox mother in a pink floral hanbok, leading four fox-eared children — one carrying a scroll, one an infant in a basket carrier — through a lantern-lit forest with fireflies and butterflies.",
-      }}
-    />
-
-    <section class="field-body">
-      <p class="reveal">
-        "Kits" carries both meanings at once — fox kits, and kids. The wordplay is load-bearing:
-        it ties the family's fox nature to the children at the centre of the story.
-      </p>
-      <p class="reveal">
-        An original IP, planned to start as a children's book series. A family group of six —
-        two parents, four children — all fox-eared. Soft watercolour storybook illustration.
-        Hanging lanterns, fireflies, butterflies, dappled light through a heavy canopy.
-      </p>
-    </section>
-
-    <section class="field-forest" id="forest" aria-label="The forest within">
-      <h2 class="reveal">The forest within</h2>
-      <p class="reveal field-forest__intro">
-        A sapling per monthly consolidation. A fuller grove per season.
-      </p>
-      {recaps.length === 0 ? (
-        <p class="reveal field-forest__empty">No saplings yet. The first one is still taking root.</p>
-      ) : (
-        <div class="field-forest__entries">
-          {recaps.map((entry) => <ForestEntry {...entry.data} />)}
-        </div>
-      )}
-    </section>
-  </main>
-
-  <SkyFront />
-</Layout>
-
-<style>
-  .field { position: relative; z-index: 2; }
-
-  .field-body {
-    max-width: 42rem;
-    margin: 0 auto;
-    padding: var(--space-24) var(--space-4);
-    font-size: var(--text-lg);
-    line-height: var(--lh-lg);
-  }
-  .field-forest {
-    max-width: 64rem;
-    margin: 0 auto;
-    padding: 0 var(--space-4) var(--space-32);
-    text-align: center;
-  }
-  .field-forest h2 {
-    font-size: var(--text-3xl);
-  }
-  .field-forest__intro {
-    color: var(--text-muted);
-    margin-bottom: var(--space-8);
-  }
-  .field-forest__empty {
-    font-style: italic;
-    color: var(--text-muted);
-  }
-</style>
+  <p class="reveal">
+    &ldquo;Kits&rdquo; carries both meanings at once &mdash; fox kits, and kids. The
+    wordplay is load-bearing: it ties the family&rsquo;s fox nature to the children at
+    the centre of the story.
+  </p>
+  <p class="reveal" style="--reveal-delay: 120ms;">
+    An original IP, planned to start as a children&rsquo;s book series. A family group
+    of six &mdash; two parents, four children &mdash; all fox-eared. Soft watercolour
+    storybook illustration. Hanging lanterns, fireflies, butterflies, dappled light
+    through a heavy canopy.
+  </p>
+</Field>

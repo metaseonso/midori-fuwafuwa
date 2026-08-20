@@ -19,7 +19,7 @@ import { withBase } from "../lib/url";
   title="Midori Fuwafuwa™ — a production studio based out of a Dreamland"
   description="A production studio based out of a Dreamland, shared by Seonso and Grumpy Carrot. Midori Fuwa Fuwa, and the different dream fields inside it."
 >
-  <main id="main" class="dream">
+  <main id="main" class="dream dreamground">
     <!-- ── arrival ────────────────────────────────────────────────────
          The mark, whole and uncropped, on its own cream. The logo's
          ground is #F4EDD6 (measured off the file's border), so the page
@@ -160,34 +160,10 @@ import { withBase } from "../lib/url";
 </Layout>
 
 <style>
-  /* The ground is midori, not beige. A flat cream read as plain paper; this
-     is a mint field that warms as you sink through it — mint at altitude,
-     the logo's own cream at the floor where the painted cloud bank lands.
-     Every stop is a DESIGN_SYSTEM 1 colour or sits between two of them.
-
-     --paper is the logo's measured border colour. It is held ONLY as the
-     radial glow behind the mark, so the mark still sits seamless while the
-     page around it is green. */
-  /* Overscroll rubber-banding exposes the body, not .dream. Without this the
-     page bounces on the old beige. Scoped to this route's stylesheet. */
-  :global(body) { background: #bfe9d3; }
-
-  .dream {
-    --paper: #f4edd6;
-    position: relative;
-    overflow-x: clip;
-    background:
-      linear-gradient(
-        180deg,
-        #bfe9d3 0%,
-        #cbeddc 12%,
-        #d8f0e2 30%,
-        #e3f1e4 52%,
-        #ecf0e2 74%,
-        #f2eede 90%,
-        #f4edd6 100%
-      );
-  }
+  /* Ground, --paper and the body colour now live in global.css as
+     .dreamground — one definition shared with every dream field, so the
+     landing and the fields can never drift apart again. */
+  .dream { position: relative; }
 
   /* ── arrival ─────────────────────────────────────────────────────── */
   .arrival {

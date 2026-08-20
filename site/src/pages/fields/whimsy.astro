@@ -1,116 +1,70 @@
 ---
 import { getCollection } from "astro:content";
-import Layout from "../../layouts/Layout.astro";
-import FieldHero from "../../components/FieldHero.astro";
-import DreamSky from "../../components/DreamSky.astro";
-import SkyFront from "../../components/SkyFront.astro";
-import ForestEntry from "../../components/ForestEntry.astro";
+import Field from "../../layouts/Field.astro";
 import { sortForestEntries } from "../../lib/forestSort";
 import { withBase } from "../../lib/url";
 
+// Copy is the founders' own, trimmed: productions/whimsy-fairy-journal/PROJECT.md.
+// The quote below is Whimsy's voice and belongs here — and only here. See
+// knowledgebase/decisions/decision-log.md, 2026-08-19.
 const recaps = sortForestEntries(
   await getCollection("recaps", ({ id }) => id.startsWith("whimsy-fairy-journal/"))
 );
 ---
 
-<Layout
+<Field
   title="Whimsy — a dream field | Midori Fuwafuwa™"
-  description="A fairy keeps your journals, notes, and doodles safe, then sprinkles fairy dust to turn them into a world you can explore."
+  description="A magical fairy keeps your journals, notes and doodles safe, then sprinkles fairy dust to turn them into a whimsical world you can explore."
+  eyebrow="Dream field 02"
+  name="Whimsy"
+  tagline="A magical fairy keeps your journals, notes and doodles safe — then sprinkles fairy dust to turn them into a whimsical world you can explore."
+  recaps={recaps}
+  image={{
+    webp: withBase("/images/fields/whimsy-reference.webp"),
+    width: 640,
+    height: 640,
+    alt: "Direction reference for Whimsy: a small fairy with lilac hair and iridescent wings hovers over an open journal, from whose pages floating islands rise, each carrying a tiny gazebo and trailing gold sparkle dust.",
+  }}
 >
-  <DreamSky />
+  <p class="reveal">
+    A magical fairy keeps your diary entries, journal pages, daily planner agendas,
+    scrapbooks, pinboards, notes, and doodles safe &mdash; then sprinkles fairy dust
+    to turn them into a whimsical world you can explore. Mundane tasks, to-do lists,
+    random ideas, and doodles come alive with vivid images and charming animations.
+    As the seasons change, you receive personalised recaps of your own storyline,
+    woven together with fascinating facts ranging from the earth to the stars and
+    everything in between.
+  </p>
 
-  <main id="main" class="field">
-    <FieldHero
-      eyebrow="Dream field 02 · working title"
-      title="Whimsy"
-      tagline="A fairy keeps your journals, notes, and doodles safe, then sprinkles fairy dust to turn them into a whimsical world you can explore."
-      image={{
-        webp: withBase("/images/fields/whimsy-reference.webp"),
-        fallback: withBase("/images/fields/whimsy-reference.jpg"),
-        width: 640,
-        height: 640,
-        alt: "Direction reference for Whimsy: a small fairy with lilac hair and iridescent wings hovers over an open journal, from whose pages floating islands rise, each carrying a tiny gazebo and trailing gold sparkle dust.",
-      }}
-    />
-
-    <section class="field-body">
-      <p class="reveal">
-        A magical fairy keeps your diary entries, journal pages, daily planner agendas,
-        scrapbooks, pinboards, notes, and doodles safe — then sprinkles fairy dust to turn them
-        into a whimsical world you can explore. Mundane tasks, to-do lists, random ideas, and
-        doodles come alive with vivid images and charming animations. As the seasons change,
-        you receive personalised recaps of your own storyline, woven together with fascinating
-        facts ranging from the earth to the stars and everything in between.
-      </p>
-      <blockquote class="reveal field-body__quote">
-        <p>
-          They say not to get lost in your fantasies, but we know you're a secret genius with
-          a method to your madness.
-        </p>
-        <p>So we say: don't get lost in your fantasies — let's FIND ourselves THROUGH them!</p>
-        <p>With just a bit of <strong>WHIMSY</strong>.</p>
-      </blockquote>
-    </section>
-
-    <section class="field-forest" id="forest" aria-label="The forest within">
-      <h2 class="reveal">The forest within</h2>
-      <p class="reveal field-forest__intro">
-        A sapling per monthly consolidation. A fuller grove per season.
-      </p>
-      {recaps.length === 0 ? (
-        <p class="reveal field-forest__empty">No saplings yet. The first one is still taking root.</p>
-      ) : (
-        <div class="field-forest__entries">
-          {recaps.map((entry) => <ForestEntry {...entry.data} />)}
-        </div>
-      )}
-    </section>
-  </main>
-
-  <SkyFront />
-</Layout>
+  <blockquote class="whimsy-quote reveal" style="--reveal-delay: 120ms;">
+    <p>
+      They say not to get lost in your fantasies, but we know you&rsquo;re a secret
+      genius with a method to your madness.
+    </p>
+    <p>
+      So we say: don&rsquo;t get lost in your fantasies &mdash;
+      let&rsquo;s <em>find</em> ourselves <em>through</em> them!
+    </p>
+    <p>With just a bit of <strong>whimsy</strong>.</p>
+  </blockquote>
+</Field>
 
 <style>
-  .field { position: relative; z-index: 2; }
-
-  .field-body {
-    max-width: 42rem;
-    margin: 0 auto;
-    padding: var(--space-24) var(--space-4);
-    font-size: var(--text-lg);
-    line-height: var(--lh-lg);
+  /* Whimsy's own voice, set apart from the description above it. Baloo 2 and
+     a mint rule — the studio never raises its voice, so this does not shout
+     either; it just stops being the same speaker. */
+  .whimsy-quote {
+    margin: var(--space-12) 0 0;
+    padding-left: clamp(var(--space-4), 3vw, var(--space-8));
+    border-left: 3px solid var(--mint);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.15rem, 1.7vw, 1.5rem);
+    line-height: 1.5;
+    color: var(--ink-green);
   }
-  .field-body__quote {
-    margin: var(--space-8) 0;
-    padding: var(--space-6) var(--space-8);
-    background: color-mix(in srgb, var(--blush-pale) 60%, var(--ground));
-    border-left: 4px solid var(--blush);
-    border-radius: var(--radius-lg);
-    font-family: var(--font-hand);
-    font-size: var(--text-xl);
-    line-height: 1.4;
-  }
-  .field-body__quote p {
-    margin: 0 0 var(--space-2);
-  }
-  .field-body__quote p:last-child {
-    margin-bottom: 0;
-  }
-  .field-forest {
-    max-width: 64rem;
-    margin: 0 auto;
-    padding: 0 var(--space-4) var(--space-32);
-    text-align: center;
-  }
-  .field-forest h2 {
-    font-size: var(--text-3xl);
-  }
-  .field-forest__intro {
-    color: var(--text-muted);
-    margin-bottom: var(--space-8);
-  }
-  .field-forest__empty {
-    font-style: italic;
-    color: var(--text-muted);
-  }
+  .whimsy-quote p { margin: 0 0 var(--space-4); }
+  .whimsy-quote p:last-child { margin-bottom: 0; }
+  .whimsy-quote em { font-style: normal; font-weight: 700; color: var(--ink); }
+  .whimsy-quote strong { font-weight: 700; }
 </style>

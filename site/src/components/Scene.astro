@@ -63,20 +63,16 @@ const { prose, mood, sourceLabel, sourceHref, asset } = Astro.props;
 </article>
 
 <style>
-  /* A soft wash of light, not a card — a white panel with a hard border
-     radius reads as a dashboard and breaks the world the field builds. */
+  /* No panel. Earlier passes gave a scene a translucent white wash, then a
+     cream one — both read as cards, and a card is a dashboard, not a dream.
+     A scene is held together by its icon and the space around it. The page
+     keeps its cloud banks clear of this column, so the prose sits on open
+     ground at --ink: 9.6:1 or better everywhere. */
   .scene {
-    background: radial-gradient(
-      ellipse 120% 90% at 50% 40%,
-      rgba(255, 255, 255, 0.72) 0%,
-      rgba(255, 255, 255, 0.34) 55%,
-      rgba(255, 255, 255, 0) 100%
-    );
-    border-radius: var(--radius-xl);
-    padding: var(--space-6);
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-4);
     height: 100%;
     text-align: left;
   }
@@ -87,7 +83,8 @@ const { prose, mood, sourceLabel, sourceHref, asset } = Astro.props;
   .scene__prose {
     margin: 0;
     font-size: var(--text-base);
-    line-height: var(--lh-base);
+    line-height: 1.66;
+    color: var(--ink);
     flex: 1;
   }
   .scene__meta {

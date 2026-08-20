@@ -98,6 +98,49 @@ button:focus-visible,
   border: 0;
 }
 
+/* ---- the Dreamland ground ----------------------------------------------
+   ONE definition, shared by the landing and every dream field. The two used
+   to carry separate backgrounds and drifted apart: the landing became a mint
+   field while the fields stayed on a washed cream, so following a link left
+   the design. Anything that is the Dreamland uses this class.
+
+   Mint at altitude, warming to the logo's own cream at the floor. Every stop
+   is a DESIGN_SYSTEM §1 colour or sits between two of them. --paper is the
+   logo's measured border colour (#F4EDD6), held so the mark can sit on it
+   with no seam. ---- */
+.dreamground {
+  --paper: #f4edd6;
+  position: relative;
+  overflow-x: clip;
+  background: linear-gradient(
+    180deg,
+    #c9edda 0%,
+    #d0efdf 12%,
+    #d8f0e2 30%,
+    #e3f1e4 52%,
+    #ecf0e2 74%,
+    #f2eede 90%,
+    #f4edd6 100%
+  );
+}
+
+/* Overscroll rubber-banding exposes the body, not .dreamground. */
+body { background: #c9edda; }
+
+/* ---- why there is no text-surface class here ----
+   DESIGN_SYSTEM §5 asks for --ground at 92% behind body copy laid over
+   illustration. The first fix for the fields' unreadable prose was exactly
+   that — and rendered, it was wrong: soft cream panels on mint still read as
+   boxes, on a site whose whole rule is that nothing is squared off.
+
+   The real fix is upstream. Cloud banks are placed clear of the text column,
+   so running text sits on the open ground and never over painted art. §5's
+   condition is then not met at all. Measured against the ground gradient:
+   --ink 9.6–10.9, --wood 4.6–5.0, --ink-green 6.9–7.9 — AA or better at every
+   stop, which is why the top stop is #C9EDDA and not a more saturated mint.
+   Below #C9EDDA, --wood and --mint-deep drop under 4.5 and the page needs
+   panels again. Do not darken it. ---- */
+
 /* ---- guardrail 1: cap every fullscreen element ----
    min-height alone loses to max-height when min > max (CSS spec: min-height
    wins that conflict), which silently defeats the cap on Googlebot's
