@@ -166,19 +166,25 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
     margin: 0;
   }
 
-  .fhero__art { margin: 0; position: relative; z-index: 2; }
+  /* ---- the frame ----
+     The art now drifts INSIDE a window instead of moving as one block: the
+     frame travels at page speed, the painting inside it lags. That is the
+     whole "premium parallax" effect, and it is what gives each world depth of
+     its own rather than depth only against its neighbours.
 
-  .fhero__unformed {
-    aspect-ratio: 1;
-    width: 100%;
-    background:
-      radial-gradient(circle at 44% 40%, rgb(248 209 209 / 0.85) 0%, rgb(248 209 209 / 0) 46%),
-      radial-gradient(circle at 58% 56%, rgb(190 236 206 / 0.95) 0%, rgb(190 236 206 / 0) 52%),
-      radial-gradient(circle at 50% 50%, rgb(209 239 222 / 0.8) 0%, rgb(209 239 222 / 0) 68%);
-  }
-  .fhero__img {
-    width: 100%;
-    height: auto;
+     Two things make it safe here. The clip and the soft bleed both live on
+     the FRAME — clipping with a plain `overflow: hidden` alone would hand
+     back the hard rectangle this whole site exists to avoid. And the
+     oversize rides `scale`, not width/height, because global.css sets
+     `img[width][height] { height: auto }` at a higher specificity than any
+     class here could reach, and because scale composes with translate on the
+     compositor instead of fighting it. */
+  .fhero__art {
+    margin: 0;
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    view-timeline-name: --frame;
     -webkit-mask-image: radial-gradient(
       closest-side circle at 50% 50%,
       #000 54%,
@@ -193,6 +199,21 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
       rgba(0, 0, 0, 0.4) 88%,
       transparent 100%
     );
+  }
+  .fhero__img {
+    width: 100%;
+    height: auto;
+    scale: 1.14;
+    will-change: translate;
+  }
+
+  .fhero__unformed {
+    aspect-ratio: 1;
+    width: 100%;
+    background:
+      radial-gradient(circle at 44% 40%, rgb(248 209 209 / 0.85) 0%, rgb(248 209 209 / 0) 46%),
+      radial-gradient(circle at 58% 56%, rgb(190 236 206 / 0.95) 0%, rgb(190 236 206 / 0) 52%),
+      radial-gradient(circle at 50% 50%, rgb(209 239 222 / 0.8) 0%, rgb(209 239 222 / 0) 68%);
   }
 
   /* ---- the prose ---- */
@@ -247,7 +268,7 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
   @supports (animation-timeline: view()) {
     html.js .fhero__art {
       animation: fhero-settle linear both;
-      animation-timeline: view();
+      animation-timeline: --frame;
       animation-range: entry 2% cover 26%;
     }
     html.js .fhero__word {
@@ -255,10 +276,25 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
       animation-timeline: view();
       animation-range: entry 10% cover 30%;
     }
+    /* A named timeline, not an anonymous view(). The frame carries
+       `overflow: hidden`, which makes it a scroll container — so an
+       anonymous view() declared on anything INSIDE it resolves against the
+       frame rather than the page, sits at constant progress and never
+       moves. Naming the timeline on the frame itself, where the scrollport
+       really is the page, is what makes the inner drift work at all. */
+    html.js .fhero__img {
+      animation: in-frame linear both;
+      animation-timeline: --frame;
+      animation-range: cover;
+    }
   }
   @keyframes fhero-settle {
     from { opacity: 0; transform: translateY(64px) scale(0.974); }
     to   { opacity: 1; transform: none; }
+  }
+  @keyframes in-frame {
+    from { translate: 0 -5%; }
+    to   { translate: 0 5%; }
   }
   @keyframes fword-settle {
     from { opacity: 0; transform: translateY(42px); }
@@ -278,10 +314,13 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
 
   @media (prefers-reduced-motion: reduce) {
     html.js .fhero__art,
-    html.js .fhero__word {
+    html.js .fhero__word,
+    html.js .fhero__img {
       animation: none !important;
       opacity: 1 !important;
       transform: none !important;
+      translate: none !important;
     }
+    html.js .fhero__img { scale: 1.14 !important; }
   }
 </style>

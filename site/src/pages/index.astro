@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import World from "../components/World.astro";
 import Mark from "../components/Mark.astro";
+import Plane from "../components/Plane.astro";
 import Drift from "../components/Drift.astro";
 import { withBase } from "../lib/url";
 
@@ -27,6 +28,31 @@ import { withBase } from "../lib/url";
          is that colour and the image needs no cutout at all. -->
     <section class="arrival viewport-cap">
       <h1 class="visually-hidden">Midori Fuwafuwa Studio</h1>
+
+      {/* Layered planes, bottom-heavy, so the arrival reads as a cloudscape
+          with a floor rather than a gradient with decoration on it. Speeds
+          are the reference's own scale: 100% is page speed, lower is further
+          away. Front planes are kept low, where they graze past the mascot
+          without ever crossing its face.
+
+          Which plate can go where is not a taste call — it was measured off
+          the alpha channel of each file:
+            sky-far, sky-mid  dissolve top and bottom, hard left/right
+                              → run wider than the viewport, edges off screen
+            cloud-floor       dissolves at the top only
+                              → pinned low, its sides and foot off screen
+            island-misty      dissolves on all four edges → free to sit anywhere
+            sky-near, sky-front  hard rectangles on ALL four edges, and
+                              sky-near carries a straight cut inside the art
+                              itself → unusable here at any size. The first
+                              version used sky-near and put a hard horizontal
+                              seam across the top of the hero.
+          Nothing is faded to hide an edge — DESIGN_SYSTEM §6. */}
+      <Plane src="sky-far"      speed={0.30} w={150} top="10%" left="46%" layer="back" />
+      <Plane src="sky-mid"      speed={0.52} w={168} top="46%" left="56%" layer="back" flip />
+      <Plane src="island-base"  speed={0.88} w={42}  top="76%" left="89%" layer="front" flip />
+      <Plane src="island-misty" speed={0.94} w={46}  top="86%" left="12%" layer="front" />
+
       <Mark />
       <p class="arrival__cue" aria-hidden="true">
         <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
@@ -165,7 +191,17 @@ import { withBase } from "../lib/url";
     position: relative;
     padding: var(--space-12) var(--space-6) var(--space-24);
     isolation: isolate;
-    overflow: hidden;
+    /* No overflow clip, deliberately. Clipping the section drew a razor-
+       straight line across the full width where the cloudscape met the next
+       section — a hard rectangle, which is the one thing this design cannot
+       have. So nothing is clipped; instead every plane here is one whose
+       alpha dissolves at top and bottom, and it is simply allowed to carry
+       on past the fold. `isolation: isolate` keeps them all inside this
+       section's stacking context, so the copy below still paints over them.
+
+       The cap from .viewport-cap, named so the planes can measure their
+       travel against the section's real height (reference, point 4). */
+    --range: min(100svh, 900px);
   }
   /* Warm light behind the mark. It reaches far past the logo's own edge and
      dissolves long before it stops, so the mark's cream ground and the page
@@ -191,6 +227,7 @@ import { withBase } from "../lib/url";
 
   .arrival__cue {
     position: absolute;
+    z-index: 2;
     bottom: var(--space-12);
     left: 50%;
     transform: translateX(-50%);

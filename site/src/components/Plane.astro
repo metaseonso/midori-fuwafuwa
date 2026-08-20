@@ -1,0 +1,114 @@
+---
+// One plane of the arrival's layered parallax.
+//
+// Built to the reference the founder supplied, point for point:
+//
+//  1. LAYERING — distinct transparent painted planes, stacked by z-index so
+//     depth comes from occlusion. `back` sits behind the mark, `front` passes
+//     over it.
+//  2. POSITIONING — absolute inside the hero, decoupled from document flow so
+//     each plane's coordinates are independent.
+//  3. VELOCITY — each plane carries a Framer-style speed factor, where 100% is
+//     normal page speed. The reference's Position_y = Initial − (ScrollDelta ×
+//     Speed) is expressed here as its CSS equivalent: the plane already moves
+//     with the page at 100%, so the keyframe adds back the shortfall,
+//     (1 − speed) × range, downward. Speed 0.3 reads distant; 0.95 reads near.
+//  4. CONSTRAINT — --range is the hero's own capped height, min(100svh, 900px),
+//     the same value .viewport-cap pins the section to. Tying the travel to the
+//     cap rather than to raw viewport height is what stops the planes tearing
+//     open gaps when the frame resizes — and it is the same cap that keeps
+//     Googlebot's expanded viewport from stretching this section.
+//
+// These plates fill their frames to the pixel, so every one is run wider than
+// the viewport and the hero clips them. Their hard edges never come on screen.
+// Nothing here is faded to hide an edge — DESIGN_SYSTEM §6.
+import { withBase } from "../lib/url";
+
+interface Props {
+  src: string;
+  /** Framer's own scale: 1 = page speed, lower = further away. */
+  speed: number;
+  /** vw */
+  w: number;
+  top: string;
+  left?: string;
+  layer?: "back" | "front";
+  flip?: boolean;
+}
+
+const { src, speed, w, top, left = "50%", layer = "back", flip = false } = Astro.props;
+
+// Intrinsic sizes, so each plane reserves its box before the art lands.
+const SIZES: Record<string, [number, number]> = {
+  "sky-far": [1200, 670],
+  "sky-mid": [1200, 670],
+  "sky-near": [1200, 670],
+  "sky-front": [1200, 670],
+  "cloud-floor": [1200, 670],
+  "island-base": [1000, 545],
+  "island-misty": [900, 491],
+  motes: [760, 760],
+};
+const [iw, ih] = SIZES[src];
+---
+
+<img
+  class:list={["plane", `plane--${layer}`]}
+  src={withBase(`/images/dream/${src}.webp`)}
+  width={iw}
+  height={ih}
+  alt=""
+  aria-hidden="true"
+  loading="eager"
+  decoding="async"
+  style={`--speed:${speed}; --w:${w}vw; --top:${top}; --left:${left}; --sx:${flip ? -1 : 1};`}
+/>
+
+<style>
+  .plane {
+    position: absolute;
+    top: var(--top);
+    left: var(--left);
+    width: var(--w);
+    max-width: none;
+    height: auto;
+    pointer-events: none;
+    /* scaleX last, so the mirror happens about the plane's own centre after
+       it has been positioned. */
+    transform: translate(-50%, -50%) scaleX(var(--sx));
+    will-change: transform;
+  }
+
+  /* Behind the warm glow that holds the mark seamless, so distant cloud reads
+     as cloud dissolving into the light rather than as texture over the logo. */
+  .plane--back { z-index: -2; }
+  /* In front of the mark. This is the occlusion that carries the depth. */
+  .plane--front { z-index: 1; }
+
+  @supports (animation-timeline: scroll()) {
+    html.js .plane {
+      animation: plane-speed linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 var(--range);
+    }
+  }
+  @keyframes plane-speed {
+    to {
+      transform: translate(-50%, calc(-50% + (1 - var(--speed)) * var(--range)))
+        scaleX(var(--sx));
+    }
+  }
+
+  @media (max-width: 768px) {
+    /* Wider still on a narrow screen: these plates must always overhang the
+       viewport or their own straight edges walk into frame. */
+    .plane { width: calc(var(--w) * 1.7); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js .plane {
+      animation: none !important;
+      transform: translate(-50%, -50%) scaleX(var(--sx)) !important;
+    }
+  }
+</style>

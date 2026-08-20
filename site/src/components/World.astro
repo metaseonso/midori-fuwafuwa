@@ -86,17 +86,25 @@ const { index, title, line, href, image, flip = false, depth = 1 } = Astro.props
   .world--flip .world__link > * { direction: ltr; }
 
   /* ---- the art ---- */
+  /* ---- the frame ----
+     The art now drifts INSIDE a window instead of moving as one block: the
+     frame travels at page speed, the painting inside it lags. That is the
+     whole "premium parallax" effect, and it is what gives each world depth of
+     its own rather than depth only against its neighbours.
+
+     Two things make it safe here. The clip and the soft bleed both live on
+     the FRAME — clipping with a plain `overflow: hidden` alone would hand
+     back the hard rectangle this whole site exists to avoid. And the
+     oversize rides `scale`, not width/height, because global.css sets
+     `img[width][height] { height: auto }` at a higher specificity than any
+     class here could reach, and because scale composes with translate on the
+     compositor instead of fighting it. */
   .world__art {
     margin: 0;
     position: relative;
     z-index: 2;
-  }
-  .world__img {
-    width: 100%;
-    height: auto;
-    /* The bleed: solid across the subject, dissolving only at the
-       rectangle's corners. Painted edges are allowed to end softly; the
-       painting itself stays at full strength. */
+    overflow: hidden;
+    view-timeline-name: --frame;
     -webkit-mask-image: radial-gradient(
       closest-side circle at 50% 50%,
       #000 54%,
@@ -111,6 +119,14 @@ const { index, title, line, href, image, flip = false, depth = 1 } = Astro.props
       rgba(0, 0, 0, 0.4) 88%,
       transparent 100%
     );
+  }
+  .world__img {
+    width: 100%;
+    height: auto;
+    /* 14% oversize leaves 7% of headroom at each edge; the drift below uses
+       5%, so the frame is never uncovered at either end of the travel. */
+    scale: 1.14;
+    will-change: translate;
   }
 
   /* ---- the words ----
@@ -175,8 +191,20 @@ const { index, title, line, href, image, flip = false, depth = 1 } = Astro.props
        `transform` and `translate` — so they compose rather than fight. */
     html.js .world__art {
       animation: world-settle linear both, art-drift linear both;
-      animation-timeline: view(), view();
+      animation-timeline: --frame, --frame;
       animation-range: entry 2% entry 88%, cover;
+    }
+    /* The painting lags its own frame across the whole pass. */
+    /* A named timeline, not an anonymous view(). The frame carries
+       `overflow: hidden`, which makes it a scroll container — so an
+       anonymous view() declared on anything INSIDE it resolves against the
+       frame rather than the page, sits at constant progress and never
+       moves. Naming the timeline on the frame itself, where the scrollport
+       really is the page, is what makes the inner drift work at all. */
+    html.js .world__img {
+      animation: in-frame linear both;
+      animation-timeline: --frame;
+      animation-range: cover;
     }
     html.js .world__word {
       animation: word-settle linear both, word-drift linear both;
@@ -199,6 +227,10 @@ const { index, title, line, href, image, flip = false, depth = 1 } = Astro.props
     from { translate: 0 calc(34px * var(--depth)); }
     to   { translate: 0 calc(-34px * var(--depth)); }
   }
+  @keyframes in-frame {
+    from { translate: 0 -5%; }
+    to   { translate: 0 5%; }
+  }
   @keyframes word-drift {
     from { translate: 0 calc(16px * var(--depth)); }
     to   { translate: 0 calc(-16px * var(--depth)); }
@@ -216,12 +248,16 @@ const { index, title, line, href, image, flip = false, depth = 1 } = Astro.props
 
   @media (prefers-reduced-motion: reduce) {
     html.js .world__art,
-    html.js .world__word {
+    html.js .world__word,
+    html.js .world__img {
       animation: none !important;
       opacity: 1 !important;
       transform: none !important;
       translate: none !important;
     }
+    /* scale stays: at rest the painting sits centred in its frame, which is
+       the composition the still design is judged on. */
+    html.js .world__img { scale: 1.14 !important; }
     .world__go svg { transition: none; }
   }
 </style>
