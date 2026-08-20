@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import World from "../components/World.astro";
+import Mark from "../components/Mark.astro";
 import Drift from "../components/Drift.astro";
 import { withBase } from "../lib/url";
 
@@ -26,15 +27,7 @@ import { withBase } from "../lib/url";
          is that colour and the image needs no cutout at all. -->
     <section class="arrival viewport-cap">
       <h1 class="visually-hidden">Midori Fuwafuwa Studio</h1>
-      <img
-        class="arrival__mark"
-        src={withBase("/images/mark/logo.webp")}
-        width="1200"
-        height="1200"
-        alt="The Midori Fuwafuwa Studio mark: a small mint-green fluffy cloud with rosy cheeks, painting at a wooden easel, beneath its name lettered in an arc."
-        fetchpriority="high"
-        decoding="async"
-      />
+      <Mark />
       <p class="arrival__cue" aria-hidden="true">
         <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
           <path
@@ -172,6 +165,7 @@ import { withBase } from "../lib/url";
     position: relative;
     padding: var(--space-12) var(--space-6) var(--space-24);
     isolation: isolate;
+    overflow: hidden;
   }
   /* Warm light behind the mark. It reaches far past the logo's own edge and
      dissolves long before it stops, so the mark's cream ground and the page
@@ -195,25 +189,6 @@ import { withBase } from "../lib/url";
     pointer-events: none;
   }
 
-  .arrival__mark {
-    width: min(86vw, 74vh, 620px);
-    height: auto;
-    /* The outermost 3% is empty cream margin — the artwork's own bounding
-       box starts at 13% on the sides and 5% at the foot. Feathering only
-       that margin dissolves any last hairline against the flat page
-       colour without touching a pixel of the painting. */
-    -webkit-mask-image: radial-gradient(
-      closest-side circle at 50% 50%,
-      #000 92%,
-      transparent 100%
-    );
-    mask-image: radial-gradient(
-      closest-side circle at 50% 50%,
-      #000 92%,
-      transparent 100%
-    );
-  }
-
   .arrival__cue {
     position: absolute;
     bottom: var(--space-12);
@@ -225,7 +200,7 @@ import { withBase } from "../lib/url";
 
   /* Weightless, and a little late: the mark hangs before it lifts away. */
   @supports (animation-timeline: scroll()) {
-    html.js .arrival__mark {
+    html.js .arrival :global(.mark__img) {
       animation: mark-away linear both;
       animation-timeline: scroll(root);
       animation-range: 0 78vh;
@@ -384,7 +359,7 @@ import { withBase } from "../lib/url";
   }
 
   @media (prefers-reduced-motion: reduce) {
-    html.js .arrival__mark,
+    html.js .arrival :global(.mark__img),
     html.js .arrival__cue,
     html.js .arrival__cue svg {
       animation: none !important;
