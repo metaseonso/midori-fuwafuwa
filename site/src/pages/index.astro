@@ -1,9 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import World from "../components/World.astro";
+
 import Mark from "../components/Mark.astro";
 import Plane from "../components/Plane.astro";
-import Drift from "../components/Drift.astro";
+
 import { withBase } from "../lib/url";
 
 // Every word on this page is the founders' own, trimmed and never rewritten.
@@ -26,6 +26,7 @@ import { withBase } from "../lib/url";
          The mark, whole and uncropped, on its own cream. The logo's
          ground is #F4EDD6 (measured off the file's border), so the page
          is that colour and the image needs no cutout at all. -->
+    <div class="frame">
     <section class="arrival viewport-cap">
       <h1 class="visually-hidden">Midori Fuwafuwa Studio</h1>
 
@@ -48,12 +49,69 @@ import { withBase } from "../lib/url";
                               version used sky-near and put a hard horizontal
                               seam across the top of the hero.
           Nothing is faded to hide an edge — DESIGN_SYSTEM §6. */}
-      <Plane src="sky-far"      speed={0.76} w={118} top="10%" left="46%" layer="back"  depth={7}  drift={0} />
-      <Plane src="sky-mid"      speed={0.85} w={126} top="46%" left="56%" layer="back"  depth={13} drift={0} flip />
-      <Plane src="island-base"  speed={0.95} w={40}  top="76%" left="89%" layer="front" depth={30} drift={21} flip />
-      <Plane src="island-misty" speed={0.98} w={44}  top="86%" left="12%" layer="front" depth={38} drift={17} />
+      <Plane src="sky-far"      w={118} top="10%" left="46%" layer="back"  depth={7}  drift={0}  partY="-78vh" partScale={1.25} />
+      <Plane src="sky-mid"      w={126} top="46%" left="56%" layer="back"  depth={13} drift={0}  partY="82vh"  partScale={1.3} flip />
+      <Plane src="island-base"  w={40}  top="76%" left="89%" layer="front" depth={30} drift={21} partX="52vw"  partY="16vh" partScale={1.5} flip />
+      <Plane src="island-misty" w={44}  top="86%" left="12%" layer="front" depth={38} drift={17} partX="-54vw" partY="22vh" partScale={1.5} />
 
       <Mark />
+
+      {/* Revealed inside the frame as the cloud draws off it. Reveal-on-scroll
+          is the architecture, by the founder's decision.
+
+          The guard that makes it acceptable is the one this project's own
+          crawlers-and-parallax.md prescribes: nothing is hidden except behind
+          `html.js`. With no JS these are a plain readable column under the
+          mark — and no AI crawler runs JS at all, so GPTBot, ClaudeBot,
+          PerplexityBot and the rest read the full page and every alt text.
+          Googlebot does render JS and will see the closed state; that document
+          calls this a risk zone rather than a violation and prescribes
+          checking it in URL Inspection before launch. Worth doing. */}
+      <div class="glimpses">
+        <a class="glimpse glimpse--01" href={withBase("/fields/the-kits/")}>
+          <img
+            class="glimpse__art"
+            src={withBase("/images/fields/the-kits-reference.webp")}
+            width="640" height="640"
+            alt="The Kits: a fox father in deep blue hanbok and a fox mother in floral pink, with four ginger fox-eared children, walking a lantern-lit forest path."
+            loading="lazy" decoding="async"
+          />
+          <span class="glimpse__word">
+            <span class="glimpse__index">01</span>
+            <span class="glimpse__name">The Kits</span>
+            <span class="glimpse__line">Seonso and Grumpy Carrot&rsquo;s children, on their journey exploring and learning about the many worlds around us.</span>
+          </span>
+        </a>
+
+        <a class="glimpse glimpse--02" href={withBase("/fields/whimsy/")}>
+          <img
+            class="glimpse__art"
+            src={withBase("/images/fields/whimsy-reference.webp")}
+            width="640" height="640"
+            alt="Whimsy: a lilac-haired fairy with iridescent wings hovering above an open journal, small green islands rising out of its written pages in a trail of gold sparkles."
+            loading="lazy" decoding="async"
+          />
+          <span class="glimpse__word">
+            <span class="glimpse__index">02</span>
+            <span class="glimpse__name">Whimsy</span>
+            <span class="glimpse__line">A magical fairy keeps your journal pages, notes and doodles safe &mdash; then sprinkles fairy dust to turn them into a world you can explore.</span>
+          </span>
+        </a>
+
+        <a class="glimpse glimpse--03" href={withBase("/fields/couple-app/")}>
+          <span
+            class="glimpse__art glimpse__art--unformed"
+            role="img"
+            aria-label="No art yet — a bloom of mint and blush light where this field's painting will go."
+          ></span>
+          <span class="glimpse__word">
+            <span class="glimpse__index">03</span>
+            <span class="glimpse__name">Couple App</span>
+            <span class="glimpse__line">Very us (Midori Fuwa Fuwa). No name yet. No art yet.</span>
+          </span>
+        </a>
+      </div>
+
       <p class="arrival__cue" aria-hidden="true">
         <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
           <path
@@ -67,114 +125,8 @@ import { withBase } from "../lib/url";
       </p>
     </section>
 
-    <!-- ── stillness ─────────────────────────────────────────────────── -->
-    <section class="creed">
-      <p class="creed__line reveal">
-        A production studio based out of <em>a Dreamland</em>, shared by
-        Seonso and Grumpy&nbsp;Carrot.
-      </p>
-      <p class="creed__who reveal" style="--reveal-delay: 140ms;">
-        She owns the muse. He owns the genius, as the Greeks say.
-      </p>
-    </section>
 
-    <!-- ── descent ───────────────────────────────────────────────────
-         Cloud banks hang at fixed depths through this whole stretch.
-         `back` sits behind the worlds, `front` passes over them — that
-         occlusion is what carries depth. -->
-    <section class="descent">
-      {/* Only the four assets whose painted edges dissolve on their own are
-          used here. sky-mid / sky-near / sky-front / cloud-floor fill their
-          frame to the pixel, so they end in a hard rectangle — the fix per
-          DESIGN_SYSTEM §6 is to cut them, not to fade them into haze.
-          sky-far touches its own left and right edges, so it is run wider
-          than the viewport and those edges never come on screen.
-
-          `front` banks are placed over the ART side of each world and never
-          over its words. Depth, not lost legibility. */}
-      <Drift src="sky-far"      w={132} top="5%"  left="50%" drift={8}  layer="back" />
-      <Drift src="motes"        w={22}  top="16%" left="84%" drift={27} layer="back" />
-      <Drift src="island-misty" w={44}  top="27%" left="9%"  drift={23} layer="front" />
-      <Drift src="island-base"  w={54}  top="45%" left="72%" drift={13} layer="back" flip />
-      <Drift src="island-misty" w={38}  top="60%" left="93%" drift={26} layer="front" flip />
-      <Drift src="motes"        w={26}  top="72%" left="18%" drift={30} layer="front" />
-      <Drift src="island-base"  w={50}  top="88%" left="26%" drift={15} layer="back" />
-
-      <p class="descent__hinge reveal">
-        Midori Fuwa Fuwa, and exploring the different dream fields.
-      </p>
-
-      <World
-        index="01"
-        title="The Kits"
-        line="Seonso and Grumpy Carrot's children, on their journey exploring and learning about the many worlds around us."
-        href={withBase("/fields/the-kits/")}
-        depth={0.7}
-        image={{
-          webp: withBase("/images/fields/the-kits-reference.webp"),
-          alt: "The Kits: a fox father in deep blue hanbok and a fox mother in floral pink, with four ginger fox-eared children, walking a lantern-lit forest path.",
-          w: 640,
-          h: 640,
-        }}
-      />
-
-      <World
-        index="02"
-        title="Whimsy"
-        flip
-        depth={1}
-        line="A magical fairy keeps your journal pages, notes and doodles safe — then sprinkles fairy dust to turn them into a world you can explore."
-        href={withBase("/fields/whimsy/")}
-        image={{
-          webp: withBase("/images/fields/whimsy-reference.webp"),
-          alt: "Whimsy: a lilac-haired fairy with iridescent wings hovering above an open journal, small green islands rising out of its written pages in a trail of gold sparkles.",
-          w: 640,
-          h: 640,
-        }}
-      />
-
-      <World
-        index="03"
-        title="Couple App"
-        line="Very us (Midori Fuwa Fuwa)."
-        href={withBase("/fields/couple-app/")}
-        depth={1.35}
-        image={{
-          webp: withBase("/images/dream/island-misty.webp"),
-          alt: "A soft painted cloud island drifting alone, standing in for a field whose art is not drawn yet.",
-          w: 900,
-          h: 491,
-        }}
-      />
-    </section>
-
-    <!-- ── rest ──────────────────────────────────────────────────────── -->
-    <section class="rest">
-      <p class="rest__line reveal">We make it for ourselves too.</p>
-      <p class="rest__body reveal" style="--reveal-delay: 140ms;">
-        We want to be an entity that makes things beautifully and thoughtfully,
-        and gets appreciated over time.
-      </p>
-      <p class="rest__door reveal" style="--reveal-delay: 260ms;">
-        Happy to be reached out to.
-      </p>
-      <p class="rest__mark">Midori Fuwafuwa&trade;</p>
-
-      {/* The floor of the dream. cloud-floor fills its own frame at the
-          bottom and the sides, so it is pinned flush to the page edge and
-          run wider than the viewport — every hard edge it has ends up off
-          screen, and only its soft painted top is ever seen. */}
-      <img
-        class="rest__floor"
-        src={withBase("/images/dream/cloud-floor.webp")}
-        width="1200"
-        height="670"
-        alt=""
-        aria-hidden="true"
-        loading="lazy"
-        decoding="async"
-      />
-    </section>
+    </div>
   </main>
 </Layout>
 
@@ -263,139 +215,156 @@ import { withBase } from "../lib/url";
     50%      { transform: translateY(6px); opacity: 1; }
   }
 
-  /* ── stillness ───────────────────────────────────────────────────── */
-  .creed {
-    position: relative;
-    z-index: 2;
+  /* ── the frame ───────────────────────────────────────────────────
+     The arrival is the whole experience. It does not scroll away: it pins,
+     and scrolling opens the cloud that is already there. --open is how much
+     scrolling it takes for the cloud to draw fully back; the three fields are
+     revealed after that, one at a time, in the same frame.
+
+     BASELINE FIRST. Everything below the @supports block is a plain, readable
+     page: the mark, then the three fields in an ordinary column, all visible.
+     That is what a crawler, a no-JS visitor and reduced motion get. Pinning
+     and revealing are the enhancement, never the thing the content depends on
+     — Googlebot renders at an expanded viewport and never scrolls, so a
+     reveal that starts hidden would hide the whole site from it. */
+  .frame { --open: 90vh; }
+
+  /* Without JS the arrival is not a pinned frame, it is just the top of a
+     readable page — so it must be free to grow, or the fields stacked beneath
+     the mark overlap it. The 900px cap that .viewport-cap applies is a
+     guardrail against Googlebot's expanded viewport, and Googlebot renders JS,
+     so it is re-applied in the enhanced block below where it actually bites. */
+  .arrival { max-height: none; }
+
+  .glimpses {
+    display: grid;
+    gap: clamp(var(--space-16), 12vh, var(--space-32));
+    justify-items: center;
+    padding: clamp(var(--space-16), 12vh, var(--space-32)) var(--space-6) 0;
+  }
+  .glimpse {
     display: grid;
     justify-items: center;
-    text-align: center;
-    gap: var(--space-12);
-    padding: clamp(var(--space-24), 18vh, 200px) var(--space-6);
-  }
-
-  .creed__line {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: clamp(2.1rem, 5.4vw, 4.1rem);
-    line-height: 1.16;
-    letter-spacing: -0.018em;
-    color: var(--ink);
-    max-width: 21ch;
-    text-wrap: balance;
-    margin: 0;
-  }
-  .creed__line em {
-    font-style: normal;
-    color: var(--ink-green);
-  }
-
-  .creed__who {
-    font-size: clamp(1.0625rem, 1.5vw, 1.35rem);
-    line-height: 1.62;
-    color: var(--wood);
-    margin: 0;
-  }
-
-  /* ── descent ─────────────────────────────────────────────────────── */
-  .descent {
-    position: relative;
-    z-index: 1;
-    padding: 0 0 clamp(var(--space-16), 10vh, var(--space-32));
-  }
-
-  .descent__hinge {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: clamp(1.15rem, 1.9vw, 1.6rem);
-    line-height: 1.5;
-    color: var(--mint-deep);
-    max-width: 40ch;
-    margin: 0 auto clamp(var(--space-16), 9vh, var(--space-24));
-    padding: 0 var(--space-6);
-  }
-
-  /* ── rest ────────────────────────────────────────────────────────── */
-  .rest {
-    position: relative;
-    z-index: 2;
-    display: grid;
-    justify-items: center;
-    text-align: center;
     gap: var(--space-8);
-    padding: clamp(var(--space-24), 16vh, 190px) var(--space-6)
-             clamp(380px, 48vh, 560px);
-    overflow: clip;
+    max-width: 40rem;
+    text-decoration: none;
+    color: inherit;
   }
-  .rest > p { position: relative; z-index: 2; }
-
-  .rest__floor {
-    position: absolute;
-    bottom: -1px;
-    left: 50%;
-    width: 118vw;
-    max-width: none;
+  .glimpse__art {
+    width: min(70vw, 560px);
     height: auto;
-    transform: translateX(-50%);
-    z-index: 0;
-    pointer-events: none;
+    /* A soft round bleed, never a rectangle: solid across the subject and
+       dissolving only at the corners. */
+    -webkit-mask-image: radial-gradient(closest-side circle at 50% 50%,
+      #000 62%, rgba(0,0,0,.9) 78%, rgba(0,0,0,.45) 90%, transparent 100%);
+    mask-image: radial-gradient(closest-side circle at 50% 50%,
+      #000 62%, rgba(0,0,0,.9) 78%, rgba(0,0,0,.45) 90%, transparent 100%);
   }
+  .glimpse__art--unformed {
+    display: block;
+    aspect-ratio: 1;
+    background:
+      radial-gradient(circle at 44% 40%, rgb(248 209 209 / .9) 0%, rgb(248 209 209 / 0) 46%),
+      radial-gradient(circle at 58% 56%, rgb(190 236 206 / .95) 0%, rgb(190 236 206 / 0) 52%),
+      radial-gradient(circle at 50% 50%, rgb(209 239 222 / .85) 0%, rgb(209 239 222 / 0) 68%);
+  }
+  .glimpse__word { display: grid; justify-items: center; text-align: center; }
+  .glimpse__index {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: var(--text-sm); letter-spacing: .34em;
+    color: var(--mint-deep); margin-bottom: var(--space-3);
+  }
+  .glimpse__name {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: clamp(2.4rem, 5.4vw, 3.8rem); line-height: 1.04;
+    letter-spacing: -.018em; color: var(--ink); margin-bottom: var(--space-4);
+    transition: color var(--dur-ui) var(--ease-standard);
+  }
+  .glimpse--01 .glimpse__name { font-size: clamp(2.8rem, 6.4vw, 4.4rem); }
+  .glimpse__line {
+    font-size: clamp(1.0625rem, 1.35vw, 1.25rem);
+    line-height: 1.62; color: var(--wood); max-width: 34ch;
+  }
+  .glimpse:hover .glimpse__name { color: var(--mint-deep); }
+  .glimpse:focus-visible {
+    outline: 3px solid var(--mint-deep);
+    outline-offset: var(--space-6);
+    border-radius: var(--radius-xl);
+  }
+
+  /* ── the enhancement: one pinned frame ───────────────────────────── */
   @supports (animation-timeline: scroll()) {
-    html.js .rest__floor {
-      animation: floor-rise linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 70%;
+    /* Tall enough to hold the opening plus one window per field — PLUS a
+       viewport. A scroll() range is measured against the scrollable distance,
+       which is the page height minus one viewport; without the extra 100svh
+       the last field's window ran past the end of the page and it never
+       finished opening. */
+    html.js .frame { height: calc(var(--open) + 300vh + 100svh); }
+    html.js .arrival {
+      position: sticky;
+      top: 0;
+      min-height: min(100svh, 900px);
+      max-height: min(100svh, 900px);
     }
-  }
-  @keyframes floor-rise {
-    from { transform: translateX(-50%) translateY(52px); }
-    to   { transform: translateX(-50%) translateY(0); }
-  }
-  @media (max-width: 860px) {
-    .rest__floor { width: 210vw; }
+    /* The fields stop being a column and become the thing inside the frame,
+       stacked in one place and shown one at a time. */
+    html.js .glimpses {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: var(--space-8) var(--space-6);
+      pointer-events: none;
+      z-index: 4;
+    }
+    html.js .glimpse {
+      grid-area: 1 / 1;
+      opacity: 0;
+      pointer-events: none;
+      animation: glimpse-open linear both;
+      animation-timeline: scroll(root);
+    }
+    html.js .glimpse--01 { animation-range: calc(var(--open) * 0.8) calc(var(--open) + 100vh); }
+    html.js .glimpse--02 { animation-range: calc(var(--open) + 90vh) calc(var(--open) + 200vh); }
+    html.js .glimpse--03 {
+      animation-name: glimpse-last;
+      animation-range: calc(var(--open) + 190vh) calc(var(--open) + 300vh);
+    }
+    html.js .glimpse__art { width: min(52vw, 460px); }
+    html.js .glimpse--01 .glimpse__art { width: min(60vw, 540px); }
   }
 
-  .rest__line {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: clamp(2rem, 4.6vw, 3.4rem);
-    line-height: 1.18;
-    letter-spacing: -0.015em;
-    color: var(--ink);
-    margin: 0;
+  /* In and out inside the frame: it arrives set back, comes to full presence
+     while it is the thing being read, then falls away as the next opens. */
+  /* The last one holds. With the closing section gone, the experience ends on
+     the field itself rather than on an empty opened frame. */
+  @keyframes glimpse-last {
+    0%   { opacity: 0; scale: .86; pointer-events: none; }
+    22%  { opacity: 1; }
+    60%, 100% { opacity: 1; scale: 1; pointer-events: auto; }
   }
 
-  .rest__body {
-    font-size: clamp(1.0625rem, 1.5vw, 1.35rem);
-    line-height: 1.62;
-    color: var(--wood);
-    max-width: 36ch;
-    margin: 0;
-  }
-
-  .rest__door {
-    margin: var(--space-6) 0 0;
-    font-family: var(--font-display);
-    font-size: clamp(1.2rem, 2vw, 1.6rem);
-  }
-  .rest__door { color: var(--mint-deep); }
-
-  .rest__mark {
-    margin: clamp(var(--space-16), 12vh, var(--space-32)) 0 0;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: var(--text-sm);
-    letter-spacing: 0.22em;
-    /* Sits over the cloud floor, so it cannot be --sage: DESIGN_SYSTEM 1.6
-       clears sage for large text only. --mint-deep holds ~5:1 on both the
-       cream and the cloud. */
-    color: var(--mint-deep);
+  @keyframes glimpse-open {
+    0%   { opacity: 0; scale: .86; pointer-events: none; }
+    18%  { opacity: 1; }
+    50%  { scale: 1; pointer-events: auto; }
+    82%  { opacity: 1; }
+    100% { opacity: 0; scale: 1.08; pointer-events: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {
+    /* No pinning, no reveal: the plain readable column, still and complete. */
+    html.js .frame { height: auto; }
+    html.js .arrival { position: static; max-height: none; }
+    html.js .glimpses { position: static; display: grid; pointer-events: auto; }
+    html.js .glimpse {
+      opacity: 1 !important;
+      scale: none !important;
+      pointer-events: auto;
+      animation: none !important;
+      grid-area: auto;
+    }
+
     html.js .arrival :global(.mark__img),
     html.js .arrival__cue,
     html.js .arrival__cue svg {
