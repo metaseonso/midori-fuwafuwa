@@ -1,0 +1,96 @@
+---
+// The arrival's atmosphere, on the GPU.
+//
+// TWO canvases, not one, and that is the whole reason this component exists:
+// depth on this site is carried by occlusion — some cloud behind the mark,
+// some passing in front of it. A single canvas can only be on one side of a
+// DOM element. So the back layers render into a canvas at z-index -2, the mark
+// sits in the DOM at its own level, and the near layers render into a second
+// canvas at z-index 1 above it. The mark stays a real <img> with real alt text
+// in between.
+//
+// Both canvases are decorative and aria-hidden. Every indexable thing on this
+// page — the h1, the mark, all copy — is DOM and untouched, per
+// crawlers-and-parallax.md: nothing whose only representation is a canvas.
+---
+
+<canvas class="glsky glsky--back" aria-hidden="true"></canvas>
+<canvas class="glsky glsky--front" aria-hidden="true"></canvas>
+
+<style>
+  .glsky {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    /* Hidden until a context, a program and every texture are all real. The
+       DOM planes are what is on screen until then, and stay on screen forever
+       if any of that fails. */
+    opacity: 0;
+  }
+  :global(.arrival.is-gl) .glsky { opacity: 1; }
+  .glsky--back { z-index: -2; }
+  .glsky--front { z-index: 1; }
+
+  /* Reduced motion never mounts this at all — the script returns before it
+     asks for a context, so there is no download, no GPU work and no scene
+     graph, exactly as case-study-01 requires. */
+  @media (prefers-reduced-motion: reduce) {
+    .glsky { display: none; }
+  }
+</style>
+
+<script>
+  import { mountDreamSky, type LayerSpec } from "../scripts/dreamsky";
+
+  // x/y are fractions of the hero; w is a fraction of hero width. These match
+  // the DOM planes they replace, so the still composition is unchanged.
+  const BACK: LayerSpec[] = [
+    { src: "sky-far", x: 0.46, y: 0.10, w: 1.18, speed: 0.76, depth: 7, drift: 52, dx: 34, dy: 20 },
+    { src: "sky-mid", x: 0.56, y: 0.46, w: 1.26, speed: 0.85, depth: 13, drift: 41, dx: 30, dy: 24, flip: true },
+  ];
+  const FRONT: LayerSpec[] = [
+    { src: "island-base", x: 0.89, y: 0.76, w: 0.40, speed: 0.95, depth: 30, drift: 21, dx: 22, dy: 16, flip: true },
+    { src: "island-misty", x: 0.12, y: 0.86, w: 0.44, speed: 0.98, depth: 38, drift: 17, dx: 26, dy: 18 },
+  ];
+
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+  // ?sky=dom forces the CSS planes, ?sky=gl forces the canvas. Which of the
+  // two is cheaper depends entirely on whether the visitor's machine has a
+  // real GPU, and that cannot be measured from here — headless Chromium
+  // rasterises WebGL in software, where the canvas measures about twice the
+  // cost of the DOM path. On hardware the ranking very likely inverts. This
+  // switch is how that gets settled on an actual machine instead of argued.
+  const want = new URLSearchParams(location.search).get("sky");
+  const stage = document.querySelector<HTMLElement>(".arrival");
+  const back = document.querySelector<HTMLCanvasElement>(".glsky--back");
+  const front = document.querySelector<HTMLCanvasElement>(".glsky--front");
+
+  if (
+    stage &&
+    back &&
+    front &&
+    want !== "dom" &&
+    !matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    const a = mountDreamSky(back, BACK, base) as any;
+    const b = mountDreamSky(front, FRONT, base) as any;
+    if (a && b) {
+      Promise.all([a.ready, b.ready]).then(([ok1, ok2]) => {
+        // Only now do the DOM planes step aside. If either half failed we keep
+        // them: a half-drawn sky is worse than the version that already works.
+        if (ok1 !== false && ok2 !== false) stage.classList.add("is-gl");
+        else {
+          a.destroy();
+          b.destroy();
+        }
+      });
+    } else {
+      a?.destroy();
+      b?.destroy();
+    }
+  }
+</script>
