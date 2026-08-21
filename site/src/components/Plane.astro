@@ -159,25 +159,31 @@ const offset = drift > 0 ? -(((drift * 0.37 * (iw % 7)) % drift).toFixed(2)) : 0
   }
 
   @supports (animation-timeline: scroll()) {
-    /* The clouds do not scroll away — they DRAW BACK. At 0% this keyframe is
-       the identity transform, which is exactly the plain-CSS resting state, so
-       the frame the visitor lands on is untouched to the pixel. Everything
-       after that is the cloud opening off it. */
+    /* The cloud opens and closes THREE times, once around each project. It
+       used to draw back once at the start and stay open, which meant the
+       second and third projects just cross-faded into the same hole — the
+       reveal only ever happened to the first one.
+
+       0% is the identity transform, which is exactly where these clouds sit in
+       plain CSS. The frame the visitor lands on is untouched. */
     html.js .plane {
       animation: plane-part linear both;
       animation-timeline: scroll(root);
-      animation-range: 0 var(--open);
     }
   }
   @keyframes plane-part {
-    from {
-      transform: translate(-50%, -50%);
-    }
-    to {
-      transform: translate(-50%, -50%)
-        translate(var(--part-x), var(--part-y))
-        scale(var(--part-scale));
-    }
+    0%          { transform: translate(-50%, -50%); }
+    11%, 26%    { transform: translate(-50%, -50%)
+                    translate(var(--part-x), var(--part-y))
+                    scale(var(--part-scale)); }
+    34%         { transform: translate(-50%, -50%); }
+    43%, 57%    { transform: translate(-50%, -50%)
+                    translate(var(--part-x), var(--part-y))
+                    scale(var(--part-scale)); }
+    65%         { transform: translate(-50%, -50%); }
+    74%, 100%   { transform: translate(-50%, -50%)
+                    translate(var(--part-x), var(--part-y))
+                    scale(var(--part-scale)); }
   }
 
   @media (max-width: 768px) {
