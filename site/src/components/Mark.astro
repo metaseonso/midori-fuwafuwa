@@ -77,7 +77,7 @@ import { withBase } from "../lib/url";
     height: auto;
     /* The mark breathes with everything else. On `translate`, so it composes
        with the scroll-driven lift that rides `transform`. */
-    animation: mark-breathe 19s ease-in-out infinite;
+    animation: mark-breathe 19s linear infinite alternate;
     /* The outermost 3% is empty cream margin — the artwork's own bounding box
        starts at 13% on the sides and 5% at the foot. Feathering only that
        margin dissolves any last hairline against the flat page colour without
@@ -95,8 +95,8 @@ import { withBase } from "../lib/url";
   }
 
   @keyframes mark-breathe {
-    0%, 100% { translate: 0 0; }
-    50%      { translate: 0 -1.6%; }
+    from { translate: 0 0.9%; }
+    to   { translate: 0 -1.4%; }
   }
 
   /* ---- one brush mark ----

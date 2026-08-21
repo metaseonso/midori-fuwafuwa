@@ -70,9 +70,10 @@ const SIZES: Record<string, [number, number]> = {
 };
 const [iw, ih] = SIZES[src];
 
-// Negative delay starts each plane part-way through its own breath, so they
-// never rise and fall together.
-const offset = -((drift * 0.37 * (iw % 7)) % drift).toFixed(2);
+// Negative delay starts each plane part-way through its own drift, so they
+// never travel in lockstep. Guarded: `x % 0` is NaN, which used to emit
+// `--delay: NaNs` on every plane with drift disabled.
+const offset = drift > 0 ? -(((drift * 0.37 * (iw % 7)) % drift).toFixed(2)) : 0;
 ---
 
 <div
@@ -124,17 +125,28 @@ const offset = -((drift * 0.37 * (iw % 7)) % drift).toFixed(2);
      forever-running animation recomposites them every single frame. Distant
      cloud should barely move anyway — that is what distance looks like — so
      the near, small planes breathe and the far, huge ones hold. Back to 0%. */
-  .plane__art--breathes {
-    animation: breathe var(--drift) ease-in-out var(--delay) infinite;
-  }
+  /* Named plane-drift, not `breathe`: index.astro already had a @keyframes
+     breathe for the scroll chevron, Astro does not scope keyframe names, and
+     that one won. Every plane was silently running the chevron's bob — which
+     also animates opacity to 0.75, so the painted art was being DIMMED, the
+     one thing DESIGN_SYSTEM §6 forbids outright. Caught by reading the
+     resolved keyframes back off the running animation.
 
-  /* Ambient float: the page is alive whether or not anyone touches it. */
-  @keyframes breathe {
-    0%,
-    100% { translate: 0 0; }
-    25%  { translate: 1.1% -2.2%; }
-    50%  { translate: 0 -3%; }
-    75%  { translate: -1.1% -1.4%; }
+     CONSTANT VELOCITY, not ease-in-out. Measured off hadaka.jp frame by frame:
+     its ambient channel is a steady linear drift that wraps, never an
+     accelerating-and-decelerating bob. The difference is the whole character of
+     the thing — steady travel reads as endless and calm, while ease-in-out
+     reads as a loop you can feel repeating.
+
+     `linear` + `alternate` is how you get constant speed out of art that does
+     not tile: the velocity never changes, only the direction, and there is no
+     seam to jump at. */
+  .plane__art--breathes {
+    animation: plane-drift var(--drift) linear var(--delay) infinite alternate;
+  }
+  @keyframes plane-drift {
+    from { translate: -1.4% 1.1%; }
+    to   { translate: 1.4% -2.4%; }
   }
 
   @supports (animation-timeline: scroll()) {

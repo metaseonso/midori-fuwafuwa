@@ -202,7 +202,7 @@ const { index, title, line, href, image, flip = false, depth = 1 } = Astro.props
        moves. Naming the timeline on the frame itself, where the scrollport
        really is the page, is what makes the inner drift work at all. */
     html.js .world__img {
-      animation: in-frame linear both;
+      animation: world-in-frame linear both;
       animation-timeline: --frame;
       animation-range: cover;
     }
@@ -227,7 +227,7 @@ const { index, title, line, href, image, flip = false, depth = 1 } = Astro.props
     from { translate: 0 calc(34px * var(--depth)); }
     to   { translate: 0 calc(-34px * var(--depth)); }
   }
-  @keyframes in-frame {
+  @keyframes world-in-frame {
     from { translate: 0 -5%; }
     to   { translate: 0 5%; }
   }

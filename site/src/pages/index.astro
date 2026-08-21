@@ -257,8 +257,8 @@ import { withBase } from "../lib/url";
     to { opacity: 0; transform: translateX(-50%) translateY(10px); }
   }
 
-  html.js .arrival__cue svg { animation: breathe 3.4s var(--ease-standard) infinite; }
-  @keyframes breathe {
+  html.js .arrival__cue svg { animation: cue-breathe 3.4s var(--ease-standard) infinite; }
+  @keyframes cue-breathe {
     0%, 100% { transform: translateY(0); opacity: 0.75; }
     50%      { transform: translateY(6px); opacity: 1; }
   }
