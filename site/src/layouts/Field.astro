@@ -12,7 +12,7 @@
 //   - Depth comes from cloud banks passing in front of and behind things.
 //   - Running text sits on .textsurface, never bare on painted cloud.
 import Layout from "./Layout.astro";
-import Stage from "../components/Stage.astro";
+import Drift from "../components/Drift.astro";
 import ForestEntry from "../components/ForestEntry.astro";
 import { withBase } from "../lib/url";
 
@@ -30,10 +30,15 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
 ---
 
 <Layout title={title} description={description}>
-  <Stage />
-
   <main id="main" class="field dreamground">
-    
+    {/* Cloud banks, full opacity. Placed down the outer edges so they graze
+        the composition and never pass behind a line of running text. */}
+    <Drift src="island-base"  w={46}  top="10%" left="93%" drift={22} layer="front" />
+    <Drift src="motes"        w={20}  top="22%" left="7%"  drift={28} layer="back" />
+    <Drift src="island-misty" w={40}  top="41%" left="-4%" drift={24} layer="front" flip />
+    <Drift src="island-base"  w={50}  top="62%" left="101%" drift={14} layer="back" flip />
+    <Drift src="motes"        w={24}  top="80%" left="9%"  drift={30} layer="front" />
+    <Drift src="island-misty" w={36}  top="93%" left="97%" drift={26} layer="back" />
 
     <p class="field__back">
       <a href={withBase("/")}>&larr; the Dreamland</a>
@@ -262,9 +267,9 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
      stuck invisible, and a non-scrolling crawler reads it all. */
   @supports (animation-timeline: view()) {
     html.js .fhero__art {
-      animation: fhero-arc linear both;
+      animation: fhero-settle linear both;
       animation-timeline: --frame;
-      animation-range: cover;
+      animation-range: entry 2% cover 26%;
     }
     html.js .fhero__word {
       animation: fword-settle linear both;
@@ -283,12 +288,9 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
       animation-range: cover;
     }
   }
-  @keyframes fhero-arc {
-    0%   { opacity: 0; scale: 0.82; }
-    18%  { opacity: 1; }
-    46%  { scale: 1; }
-    80%  { opacity: 1; }
-    100% { opacity: 0; scale: 1.09; }
+  @keyframes fhero-settle {
+    from { opacity: 0; transform: translateY(64px) scale(0.974); }
+    to   { opacity: 1; transform: none; }
   }
   @keyframes fhero-in-frame {
     from { translate: 0 -5%; }
@@ -320,6 +322,5 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
       translate: none !important;
     }
     html.js .fhero__img { scale: 1.14 !important; }
-    html.js .fhero__art { scale: none !important; }
   }
 </style>

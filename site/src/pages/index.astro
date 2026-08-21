@@ -2,7 +2,8 @@
 import Layout from "../layouts/Layout.astro";
 import World from "../components/World.astro";
 import Mark from "../components/Mark.astro";
-import Stage from "../components/Stage.astro";
+import Plane from "../components/Plane.astro";
+import Drift from "../components/Drift.astro";
 import { withBase } from "../lib/url";
 
 // Every word on this page is the founders' own, trimmed and never rewritten.
@@ -20,8 +21,6 @@ import { withBase } from "../lib/url";
   title="Midori Fuwafuwa™ — a production studio based out of a Dreamland"
   description="A production studio based out of a Dreamland, shared by Seonso and Grumpy Carrot. Midori Fuwa Fuwa, and the different dream fields inside it."
 >
-  <Stage />
-
   <main id="main" class="dream dreamground">
     <!-- ── arrival ────────────────────────────────────────────────────
          The mark, whole and uncropped, on its own cream. The logo's
@@ -30,7 +29,29 @@ import { withBase } from "../lib/url";
     <section class="arrival viewport-cap">
       <h1 class="visually-hidden">Midori Fuwafuwa Studio</h1>
 
-      
+      {/* Layered planes, bottom-heavy, so the arrival reads as a cloudscape
+          with a floor rather than a gradient with decoration on it. Speeds
+          are the reference's own scale: 100% is page speed, lower is further
+          away. Front planes are kept low, where they graze past the mascot
+          without ever crossing its face.
+
+          Which plate can go where is not a taste call — it was measured off
+          the alpha channel of each file:
+            sky-far, sky-mid  dissolve top and bottom, hard left/right
+                              → run wider than the viewport, edges off screen
+            cloud-floor       dissolves at the top only
+                              → pinned low, its sides and foot off screen
+            island-misty      dissolves on all four edges → free to sit anywhere
+            sky-near, sky-front  hard rectangles on ALL four edges, and
+                              sky-near carries a straight cut inside the art
+                              itself → unusable here at any size. The first
+                              version used sky-near and put a hard horizontal
+                              seam across the top of the hero.
+          Nothing is faded to hide an edge — DESIGN_SYSTEM §6. */}
+      <Plane src="sky-far"      speed={0.76} w={118} top="10%" left="46%" layer="back"  depth={7}  drift={0} />
+      <Plane src="sky-mid"      speed={0.85} w={126} top="46%" left="56%" layer="back"  depth={13} drift={0} flip />
+      <Plane src="island-base"  speed={0.95} w={40}  top="76%" left="89%" layer="front" depth={30} drift={21} flip />
+      <Plane src="island-misty" speed={0.98} w={44}  top="86%" left="12%" layer="front" depth={38} drift={17} />
 
       <Mark />
       <p class="arrival__cue" aria-hidden="true">
@@ -62,7 +83,22 @@ import { withBase } from "../lib/url";
          `back` sits behind the worlds, `front` passes over them — that
          occlusion is what carries depth. -->
     <section class="descent">
-      
+      {/* Only the four assets whose painted edges dissolve on their own are
+          used here. sky-mid / sky-near / sky-front / cloud-floor fill their
+          frame to the pixel, so they end in a hard rectangle — the fix per
+          DESIGN_SYSTEM §6 is to cut them, not to fade them into haze.
+          sky-far touches its own left and right edges, so it is run wider
+          than the viewport and those edges never come on screen.
+
+          `front` banks are placed over the ART side of each world and never
+          over its words. Depth, not lost legibility. */}
+      <Drift src="sky-far"      w={132} top="5%"  left="50%" drift={8}  layer="back" />
+      <Drift src="motes"        w={22}  top="16%" left="84%" drift={27} layer="back" />
+      <Drift src="island-misty" w={44}  top="27%" left="9%"  drift={23} layer="front" />
+      <Drift src="island-base"  w={54}  top="45%" left="72%" drift={13} layer="back" flip />
+      <Drift src="island-misty" w={38}  top="60%" left="93%" drift={26} layer="front" flip />
+      <Drift src="motes"        w={26}  top="72%" left="18%" drift={30} layer="front" />
+      <Drift src="island-base"  w={50}  top="88%" left="26%" drift={15} layer="back" />
 
       <p class="descent__hinge reveal">
         Midori Fuwa Fuwa, and exploring the different dream fields.
