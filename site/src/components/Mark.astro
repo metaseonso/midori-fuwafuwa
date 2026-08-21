@@ -66,10 +66,6 @@ import { withBase } from "../lib/url";
   .mark__lean {
     position: relative;
     z-index: 1;
-    /* The lean now reads the page-wide pointer instead of running its own
-       loop. Same two numbers every cloud uses, so the mark and the sky answer
-       the visitor as one scene. */
-    translate: calc(var(--pointer-x, 0) * 10px) calc(var(--pointer-y, 0) * 10px);
     /* `translate` and `rotate`, not `transform` — the pointer lean has to
        compose with the scroll-driven lift, and the individual properties
        apply alongside `transform` rather than replacing it. */
@@ -173,9 +169,10 @@ import { withBase } from "../lib/url";
   ];
   const POOL = 14;
   const SPACING = 46; // px of travel between marks — a brush, not a firehose
-  // The lean amount and its damping now live in Cloud/pointer.ts, shared with
-  // every cloud. The tilt stays gone: rotating the mark made it wobble rather
-  // than hang, and it is the studio's logo — it should not appear to swing.
+  const LEAN = 10; // px, the most the mark ever moves
+  // The tilt is gone. Rotating the mark made it wobble rather than hang, and
+  // it is the studio's logo — it should not appear to swing.
+  const EASE = 0.11; // damped, but it still answers you. 0.055 read as lag.
 
   function init(root: HTMLElement) {
     const paint = root.querySelector<HTMLElement>(".mark__paint")!;
@@ -214,15 +211,48 @@ import { withBase } from "../lib/url";
       b.classList.add("is-open");
     }
 
-    // The lean lives in CSS now, reading --pointer-x/y from <html> — the same
-    // pair every cloud reads, so the mark and the sky answer the visitor as
-    // one scene. This file keeps only what is genuinely its own: the paint,
-    // and the mascot noticing you.
+    // ---- the lean: a damped follow, run only while it still has somewhere
+    // to go. No permanent rAF loop idling in the background.
+    let tx = 0,
+      ty = 0,
+      cx = 0,
+      cy = 0,
+      running = false;
+
+    // The section is where the cursor camera lives: one write per frame, read
+    // by every plane in the arrival. Publishing two numbers beats each layer
+    // running its own listener and its own maths.
+    const stage = (root.parentElement as HTMLElement) ?? root;
+
+    function frame() {
+      cx += (tx - cx) * EASE;
+      cy += (ty - cy) * EASE;
+      stage.style.setProperty("--pointer-x", cx.toFixed(4));
+      stage.style.setProperty("--pointer-y", cy.toFixed(4));
+      lean.style.translate = `${cx * LEAN}px ${cy * LEAN}px`;
+      if (Math.abs(tx - cx) > 0.001 || Math.abs(ty - cy) > 0.001) {
+        requestAnimationFrame(frame);
+      } else {
+        running = false;
+      }
+    }
+    function nudge() {
+      if (!running) {
+        running = true;
+        requestAnimationFrame(frame);
+      }
+    }
 
     function onMove(e: PointerEvent) {
       const r = root.getBoundingClientRect();
       const px = e.clientX - r.left;
       const py = e.clientY - r.top;
+
+      // Read once, write once — never interleaved, per the GSAP performance
+      // rule that applies just as well to hand-written rAF.
+      tx = (px / r.width - 0.5) * 2;
+      ty = (py / r.height - 0.5) * 2;
+      nudge();
 
       if (!seeded) {
         lastX = px;
@@ -240,7 +270,10 @@ import { withBase } from "../lib/url";
     }
 
     function onLeave() {
+      tx = 0;
+      ty = 0;
       seeded = false;
+      nudge();
     }
 
     // ---- resting on the mascot, or tapping it: it notices, and paints.

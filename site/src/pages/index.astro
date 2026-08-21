@@ -2,7 +2,8 @@
 import Layout from "../layouts/Layout.astro";
 import World from "../components/World.astro";
 import Mark from "../components/Mark.astro";
-import Cloud from "../components/Cloud.astro";
+import Plane from "../components/Plane.astro";
+import Drift from "../components/Drift.astro";
 import { withBase } from "../lib/url";
 
 // Every word on this page is the founders' own, trimmed and never rewritten.
@@ -47,10 +48,10 @@ import { withBase } from "../lib/url";
                               version used sky-near and put a hard horizontal
                               seam across the top of the hero.
           Nothing is faded to hide an edge — DESIGN_SYSTEM §6. */}
-      <Cloud src="sky-far"      mode="hero" speed={0.76} w={130} top="-4%" layer="back"  depth={7}  drift={0} />
-      <Cloud src="sky-mid"      mode="hero" speed={0.85} w={134} top="152%" layer="back"  depth={13} drift={0} flip />
-      <Cloud src="island-base"  mode="hero" speed={0.95} w={40}  top="76%" left="89%" layer="front" depth={30} drift={21} flip />
-      <Cloud src="island-misty" mode="hero" speed={0.98} w={44}  top="86%" left="12%" layer="front" depth={38} drift={17} />
+      <Plane src="sky-far"      speed={0.76} w={118} top="10%" left="46%" layer="back"  depth={7}  drift={0} />
+      <Plane src="sky-mid"      speed={0.85} w={126} top="46%" left="56%" layer="back"  depth={13} drift={0} flip />
+      <Plane src="island-base"  speed={0.95} w={40}  top="76%" left="89%" layer="front" depth={30} drift={21} flip />
+      <Plane src="island-misty" speed={0.98} w={44}  top="86%" left="12%" layer="front" depth={38} drift={17} />
 
       <Mark />
       <p class="arrival__cue" aria-hidden="true">
@@ -68,12 +69,6 @@ import { withBase } from "../lib/url";
 
     <!-- ── stillness ─────────────────────────────────────────────────── -->
     <section class="creed">
-      {/* The descent starts here, not at the fields. Sinking should be
-          continuous: there is never a stretch of empty ground between one
-          cloud passing and the next arriving. */}
-      <Cloud src="island-misty" w={40} top="8%"  left="6%"   rise={20} approach={0.13} depth={26} drift={23} layer="front" />
-      <Cloud src="sky-mid"      w={132} top="52%" rise={9}  approach={0.05} depth={9}  layer="back" flip />
-      <Cloud src="motes"        w={20} top="86%" left="88%"  rise={26} approach={0.16} depth={34} drift={19} layer="front" />
       <p class="creed__line reveal">
         A production studio based out of <em>a Dreamland</em>, shared by
         Seonso and Grumpy&nbsp;Carrot.
@@ -97,14 +92,13 @@ import { withBase } from "../lib/url";
 
           `front` banks are placed over the ART side of each world and never
           over its words. Depth, not lost legibility. */}
-      <Cloud src="sky-far"      w={132} top="4%"  rise={7}  approach={0.04} depth={7}  layer="back" />
-      <Cloud src="motes"        w={22}  top="14%" left="86%" rise={28} approach={0.18} depth={36} drift={17} layer="front" />
-      <Cloud src="island-misty" w={44}  top="25%" left="7%"  rise={22} approach={0.14} depth={28} drift={25} layer="front" />
-      <Cloud src="sky-mid"      w={132} top="42%" rise={10} approach={0.05} depth={10} layer="back" flip />
-      <Cloud src="island-base"  w={46}  top="57%" left="95%" rise={24} approach={0.15} depth={30} drift={21} layer="front" flip />
-      <Cloud src="motes"        w={26}  top="70%" left="14%" rise={30} approach={0.19} depth={38} drift={15} layer="front" />
-      <Cloud src="island-base"  w={52}  top="84%" left="28%" rise={13} approach={0.07} depth={14} layer="back" />
-      <Cloud src="island-misty" w={38}  top="94%" left="82%" rise={26} approach={0.16} depth={32} drift={27} layer="front" flip />
+      <Drift src="sky-far"      w={132} top="5%"  left="50%" drift={8}  layer="back"  breath={36} ampX={1.2} ampY={4} />
+      <Drift src="motes"        w={22}  top="16%" left="84%" drift={27} layer="back"  breath={25} ampX={3.5} ampY={7} />
+      <Drift src="island-misty" w={44}  top="27%" left="9%"  drift={23} layer="front"  breath={33} ampX={3.5} ampY={7} />
+      <Drift src="island-base"  w={54}  top="45%" left="72%" drift={13} layer="back" flip  breath={25} ampX={3.5} ampY={7} />
+      <Drift src="island-misty" w={38}  top="60%" left="93%" drift={26} layer="front" flip  breath={29} ampX={3.5} ampY={7} />
+      <Drift src="motes"        w={26}  top="72%" left="18%" drift={30} layer="front"  breath={23} ampX={3.5} ampY={7} />
+      <Drift src="island-base"  w={50}  top="88%" left="26%" drift={15} layer="back"  breath={17} ampX={3.5} ampY={7} />
 
       <p class="descent__hinge reveal">
         Midori Fuwa Fuwa, and exploring the different dream fields.
@@ -156,8 +150,6 @@ import { withBase } from "../lib/url";
 
     <!-- ── rest ──────────────────────────────────────────────────────── -->
     <section class="rest">
-      <Cloud src="sky-mid"      w={132} top="6%"  rise={11} approach={0.06} depth={11} layer="back" />
-      <Cloud src="island-misty" w={36}  top="22%" left="92%" rise={23} approach={0.15} depth={30} drift={21} layer="front" flip />
       <p class="rest__line reveal">We make it for ourselves too.</p>
       <p class="rest__body reveal" style="--reveal-delay: 140ms;">
         We want to be an entity that makes things beautifully and thoughtfully,
@@ -274,7 +266,6 @@ import { withBase } from "../lib/url";
   /* ── stillness ───────────────────────────────────────────────────── */
   .creed {
     position: relative;
-    isolation: isolate;
     z-index: 2;
     display: grid;
     justify-items: center;
@@ -284,8 +275,6 @@ import { withBase } from "../lib/url";
   }
 
   .creed__line {
-    position: relative;
-    z-index: 4;
     font-family: var(--font-display);
     font-weight: 600;
     font-size: clamp(2.1rem, 5.4vw, 4.1rem);
@@ -302,8 +291,6 @@ import { withBase } from "../lib/url";
   }
 
   .creed__who {
-    position: relative;
-    z-index: 4;
     font-size: clamp(1.0625rem, 1.5vw, 1.35rem);
     line-height: 1.62;
     color: var(--wood);
@@ -319,7 +306,7 @@ import { withBase } from "../lib/url";
 
   .descent__hinge {
     position: relative;
-    z-index: 4;
+    z-index: 2;
     text-align: center;
     font-family: var(--font-display);
     font-weight: 600;
@@ -334,7 +321,6 @@ import { withBase } from "../lib/url";
   /* ── rest ────────────────────────────────────────────────────────── */
   .rest {
     position: relative;
-    isolation: isolate;
     z-index: 2;
     display: grid;
     justify-items: center;
@@ -373,8 +359,6 @@ import { withBase } from "../lib/url";
   }
 
   .rest__line {
-    position: relative;
-    z-index: 4;
     font-family: var(--font-display);
     font-weight: 600;
     font-size: clamp(2rem, 4.6vw, 3.4rem);
@@ -385,8 +369,6 @@ import { withBase } from "../lib/url";
   }
 
   .rest__body {
-    position: relative;
-    z-index: 4;
     font-size: clamp(1.0625rem, 1.5vw, 1.35rem);
     line-height: 1.62;
     color: var(--wood);
@@ -395,8 +377,6 @@ import { withBase } from "../lib/url";
   }
 
   .rest__door {
-    position: relative;
-    z-index: 4;
     margin: var(--space-6) 0 0;
     font-family: var(--font-display);
     font-size: clamp(1.2rem, 2vw, 1.6rem);
@@ -404,8 +384,6 @@ import { withBase } from "../lib/url";
   .rest__door { color: var(--mint-deep); }
 
   .rest__mark {
-    position: relative;
-    z-index: 4;
     margin: clamp(var(--space-16), 12vh, var(--space-32)) 0 0;
     font-family: var(--font-display);
     font-weight: 600;

@@ -1,0 +1,198 @@
+---
+// One plane of the arrival's parallax.
+//
+// Three independent channels of motion, deliberately kept on three different
+// CSS properties so they compose on the compositor instead of overwriting one
+// another:
+//
+//   transform  — scroll parallax. The reference's speed-factor model.
+//   translate  — the cursor camera. The whole scene shifts as the visitor
+//                moves, each plane by an amount set by its depth.
+//   the img's own translate — ambient float. A slow, endless drift that runs
+//                whether or not anyone is doing anything.
+//
+// The ambient channel is the important one. Before it, every bit of motion on
+// this page was welded to the scrollbar: nothing moved unless you dragged it,
+// which is what made the page feel mechanical and made a smoothed scroll read
+// as lag. A page that breathes on its own does not depend on input to feel
+// alive.
+//
+// The scroll model, from the supplied reference:
+//  1. LAYERING   — transparent painted planes stacked by z-index; depth is
+//                  occlusion, not just speed.
+//  2. POSITIONING— absolute inside the hero, out of document flow.
+//  3. VELOCITY   — a Framer-style speed factor where 100% is page speed.
+//                  Position_y = Initial − (ScrollDelta × Speed) becomes its CSS
+//                  equivalent: the plane already travels with the page at 100%,
+//                  so the keyframe adds the shortfall (1 − speed) back down.
+//  4. CONSTRAINT — --range is the hero's capped height, min(100svh, 900px),
+//                  the same value .viewport-cap pins the section to, so travel
+//                  can never tear a gap open on resize.
+import { withBase } from "../lib/url";
+
+interface Props {
+  src: string;
+  /** Framer's own scale: 1 = page speed, lower = further away. */
+  speed: number;
+  /** vw */
+  w: number;
+  top: string;
+  left?: string;
+  layer?: "back" | "front";
+  flip?: boolean;
+  /** How far this plane answers the cursor, in px. Nearer planes move more. */
+  depth?: number;
+  /** Seconds for one ambient breath. 0 = none. Longer reads heavier. */
+  drift?: number;
+}
+
+const {
+  src,
+  speed,
+  w,
+  top,
+  left = "50%",
+  layer = "back",
+  flip = false,
+  depth = 10,
+  drift = 26,
+} = Astro.props;
+
+const SIZES: Record<string, [number, number]> = {
+  "sky-far": [1200, 670],
+  "sky-mid": [1200, 670],
+  "sky-near": [1200, 670],
+  "sky-front": [1200, 670],
+  "cloud-floor": [1200, 670],
+  "island-base": [1000, 545],
+  "island-misty": [900, 491],
+  motes: [760, 760],
+};
+const [iw, ih] = SIZES[src];
+
+// Negative delay starts each plane part-way through its own drift, so they
+// never travel in lockstep. Guarded: `x % 0` is NaN, which used to emit
+// `--delay: NaNs` on every plane with drift disabled.
+const offset = drift > 0 ? -(((drift * 0.37 * (iw % 7)) % drift).toFixed(2)) : 0;
+---
+
+<div
+  class:list={["plane", `plane--${layer}`]}
+  style={`--speed:${speed}; --w:${w}vw; --top:${top}; --left:${left}; --depth:${depth}px;`}
+>
+  <img
+    class:list={["plane__art", { "plane__art--breathes": drift > 0 }]}
+    src={withBase(`/images/dream/${src}.webp`)}
+    width={iw}
+    height={ih}
+    alt=""
+    aria-hidden="true"
+    loading="eager"
+    decoding="async"
+    style={`--sx:${flip ? -1 : 1}; --drift:${drift}s; --delay:${offset}s;`}
+  />
+</div>
+
+<style>
+  .plane {
+    position: absolute;
+    top: var(--top);
+    left: var(--left);
+    width: var(--w);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    /* The cursor camera. --pointer-x/y are written once per frame on the
+       section by the arrival's pointer loop, so every plane reads the same
+       two numbers and only its own depth differs. */
+    translate: calc(var(--pointer-x, 0) * var(--depth))
+      calc(var(--pointer-y, 0) * var(--depth));
+    /* No will-change: a scroll-driven animation already promotes this, and
+       pinning a layer for every plane only costs GPU memory. */
+  }
+
+  .plane--back { z-index: -2; }
+  .plane--front { z-index: 1; }
+
+  .plane__art {
+    width: 100%;
+    height: auto;
+    max-width: none;
+    scale: var(--sx) 1;
+  }
+  /* Ambient float is opt-in per plane, and deliberately NOT given to the big
+     distant plates. Measured: breathing all four put ~10% of frames over 20ms
+     at idle, because the two back plates are ~1.7 megapixels each and a
+     forever-running animation recomposites them every single frame. Distant
+     cloud should barely move anyway — that is what distance looks like — so
+     the near, small planes breathe and the far, huge ones hold. Back to 0%. */
+  /* Named plane-drift, not `breathe`: index.astro already had a @keyframes
+     breathe for the scroll chevron, Astro does not scope keyframe names, and
+     that one won. Every plane was silently running the chevron's bob — which
+     also animates opacity to 0.75, so the painted art was being DIMMED, the
+     one thing DESIGN_SYSTEM §6 forbids outright. Caught by reading the
+     resolved keyframes back off the running animation.
+
+     CONSTANT VELOCITY, not ease-in-out. Measured off hadaka.jp frame by frame:
+     its ambient channel is a steady linear drift that wraps, never an
+     accelerating-and-decelerating bob. The difference is the whole character of
+     the thing — steady travel reads as endless and calm, while ease-in-out
+     reads as a loop you can feel repeating.
+
+     `linear` + `alternate` is how you get constant speed out of art that does
+     not tile: the velocity never changes, only the direction, and there is no
+     seam to jump at. */
+  /* Amplitude is per-plane and defaults generous. It used to be a flat 1.4%,
+     which on a 1700px-wide plate is about 24px over half a minute — the
+     founder's note was that the clouds "barely express", and that is why.
+     Vertical is the free axis: every plate here dissolves top and bottom, so
+     it can travel there without limit. Horizontal is constrained on the wide
+     plates, whose left and right edges are hard and must stay off screen. */
+  .plane__art {
+    --amp-x: 1.4%;
+    --amp-y: 5%;
+  }
+  .plane__art--breathes {
+    animation: plane-drift var(--drift) linear var(--delay) infinite alternate;
+  }
+  @keyframes plane-drift {
+    from { translate: calc(var(--amp-x) * -1) var(--amp-y); }
+    to   { translate: var(--amp-x) calc(var(--amp-y) * -1); }
+  }
+
+  @supports (animation-timeline: scroll()) {
+    html.js .plane {
+      animation: plane-speed linear both, plane-recede linear both;
+      animation-timeline: scroll(root), scroll(root);
+      animation-range: 0 var(--range), 0 var(--range);
+    }
+  }
+  /* The arrival's cloud deck falls away as you leave it, on `scale` so it
+     composes with the speed-factor travel on `transform`. You are descending
+     THROUGH this deck: it should get further off, not follow you down. */
+  @keyframes plane-recede {
+    from { scale: 1; }
+    to   { scale: 0.78; }
+  }
+  @keyframes plane-speed {
+    to {
+      transform: translate(-50%, calc(-50% + (1 - var(--speed)) * var(--range)));
+    }
+  }
+
+  @media (max-width: 768px) {
+    /* Wider still on a narrow screen: these plates must always overhang the
+       viewport or their own straight edges walk into frame. */
+    .plane { width: calc(var(--w) * 1.7); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* DESIGN_SYSTEM §4: ambient loops stop entirely. Not slowed — stopped. */
+    html.js .plane {
+      animation: none !important;
+      transform: translate(-50%, -50%) !important;
+      translate: none !important;
+      scale: none !important;
+    }
+      .plane__art { animation: none !important; translate: none !important; }
+  }
+</style>

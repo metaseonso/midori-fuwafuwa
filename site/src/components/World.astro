@@ -206,6 +206,15 @@ const { index, title, line, href, image, flip = false, depth = 1 } = Astro.props
       animation-timeline: --frame;
       animation-range: cover;
     }
+    /* The field comes toward you across its whole pass. This is the other
+       half of the descent: cloud falls away above while the work rises up and
+       forward to meet you. On `scale`, so it composes with the settle's
+       transform and the in-frame drift's translate. */
+    html.js .world__art {
+      animation-name: world-settle, art-drift, world-forward;
+      animation-timeline: --frame, --frame, --frame;
+      animation-range: entry 2% entry 88%, cover, cover;
+    }
     html.js .world__word {
       animation: word-settle linear both, word-drift linear both;
       animation-timeline: view(), view();
@@ -214,8 +223,12 @@ const { index, title, line, href, image, flip = false, depth = 1 } = Astro.props
   }
 
   @keyframes world-settle {
-    from { opacity: 0; transform: translateY(70px) scale(0.972); }
+    from { opacity: 0; transform: translateY(70px); }
     to   { opacity: 1; transform: none; }
+  }
+  @keyframes world-forward {
+    from { scale: 0.86; }
+    to   { scale: 1.09; }
   }
   @keyframes word-settle {
     from { opacity: 0; transform: translateY(46px); }
@@ -251,6 +264,7 @@ const { index, title, line, href, image, flip = false, depth = 1 } = Astro.props
     html.js .world__word,
     html.js .world__img {
       animation: none !important;
+      scale: none !important;
       opacity: 1 !important;
       transform: none !important;
       translate: none !important;

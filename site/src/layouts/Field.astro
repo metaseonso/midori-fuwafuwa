@@ -12,7 +12,7 @@
 //   - Depth comes from cloud banks passing in front of and behind things.
 //   - Running text sits on .textsurface, never bare on painted cloud.
 import Layout from "./Layout.astro";
-import Cloud from "../components/Cloud.astro";
+import Drift from "../components/Drift.astro";
 import ForestEntry from "../components/ForestEntry.astro";
 import { withBase } from "../lib/url";
 
@@ -33,13 +33,12 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
   <main id="main" class="field dreamground">
     {/* Cloud banks, full opacity. Placed down the outer edges so they graze
         the composition and never pass behind a line of running text. */}
-    <Cloud src="sky-far"      w={132} top="3%"  rise={7}  approach={0.04} depth={7}  layer="back" />
-    <Cloud src="island-base"  w={44}  top="12%" left="93%"  rise={22} approach={0.14} depth={28} drift={22} layer="front" />
-    <Cloud src="motes"        w={20}  top="24%" left="7%"   rise={28} approach={0.18} depth={36} drift={18} layer="back" />
-    <Cloud src="island-misty" w={40}  top="43%" left="-3%"  rise={24} approach={0.15} depth={30} drift={25} layer="front" flip />
-    <Cloud src="sky-mid"      w={132} top="58%" rise={10} approach={0.05} depth={10} layer="back" flip />
-    <Cloud src="motes"        w={24}  top="78%" left="9%"   rise={30} approach={0.19} depth={38} drift={16} layer="front" />
-    <Cloud src="island-misty" w={36}  top="93%" left="97%"  rise={26} approach={0.16} depth={32} drift={27} layer="back" />
+    <Drift src="island-base"  w={46}  top="10%" left="93%" drift={22} layer="front"  breath={21} ampX={3.5} ampY={7} />
+    <Drift src="motes"        w={20}  top="22%" left="7%"  drift={28} layer="back"  breath={33} ampX={3.5} ampY={7} />
+    <Drift src="island-misty" w={40}  top="41%" left="-4%" drift={24} layer="front" flip  breath={21} ampX={3.5} ampY={7} />
+    <Drift src="island-base"  w={50}  top="62%" left="101%" drift={14} layer="back" flip  breath={25} ampX={3.5} ampY={7} />
+    <Drift src="motes"        w={24}  top="80%" left="9%"  drift={30} layer="front"  breath={19} ampX={3.5} ampY={7} />
+    <Drift src="island-misty" w={36}  top="93%" left="97%" drift={26} layer="back"  breath={23} ampX={3.5} ampY={7} />
 
     <p class="field__back">
       <a href={withBase("/")}>&larr; the Dreamland</a>
@@ -268,9 +267,9 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
      stuck invisible, and a non-scrolling crawler reads it all. */
   @supports (animation-timeline: view()) {
     html.js .fhero__art {
-      animation: fhero-settle linear both;
-      animation-timeline: --frame;
-      animation-range: entry 2% cover 26%;
+      animation: fhero-settle linear both, fhero-forward linear both;
+      animation-timeline: --frame, --frame;
+      animation-range: entry 2% cover 26%, cover;
     }
     html.js .fhero__word {
       animation: fword-settle linear both;
@@ -290,8 +289,12 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
     }
   }
   @keyframes fhero-settle {
-    from { opacity: 0; transform: translateY(64px) scale(0.974); }
+    from { opacity: 0; transform: translateY(64px); }
     to   { opacity: 1; transform: none; }
+  }
+  @keyframes fhero-forward {
+    from { scale: 0.88; }
+    to   { scale: 1.08; }
   }
   @keyframes fhero-in-frame {
     from { translate: 0 -5%; }
@@ -323,5 +326,6 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
       translate: none !important;
     }
     html.js .fhero__img { scale: 1.14 !important; }
+    html.js .fhero__art { scale: none !important; }
   }
 </style>
