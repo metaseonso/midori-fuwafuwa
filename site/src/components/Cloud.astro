@@ -1,0 +1,208 @@
+---
+// One cloud in the Dreamland. The only atmosphere primitive on the site.
+//
+// The goal, in the founder's words: it should not feel like scrolling down a
+// page, it should feel like scrolling THROUGH the clouds. Those are different
+// effects, and the difference is not speed.
+//
+// Sliding a cloud upward faster than the page is parallax: the cloud stays the
+// same size, so it reads as a painted backdrop moving behind glass. Passing
+// THROUGH means a cloud approaches, grows as it nears, sweeps past the edge of
+// vision and is gone. So `mode="flow"` scales each cloud as it rises — small
+// and slow when it is far below, large and quick as it goes by. That scale
+// term is the whole difference between falling through a volume and watching a
+// slideshow.
+//
+// Four channels of motion, deliberately on four different CSS properties so
+// they compose on the compositor rather than overwrite one another:
+//
+//   transform  scroll — rise and approach (flow), or the hero's speed factor
+//   translate  the cursor camera, from --pointer-x/y on <html> × this depth
+//   scale      part of the scroll pass (flow only)
+//   the img's
+//   translate  ambient drift — constant velocity, running with no input at all
+//
+// Replaces both Drift and Plane, which had diverged into two scroll models and
+// two sets of props for the same job.
+import { withBase } from "../lib/url";
+
+interface Props {
+  src: string;
+  /** vw */
+  w: number;
+  /** % within the parent section */
+  top: string;
+  left?: string;
+  /** back = behind the content, front = passes over it */
+  layer?: "back" | "front";
+  flip?: boolean;
+
+  /** "flow" = rises and approaches as its section passes. "hero" = the
+   *  arrival's speed-factor model against the capped hero height. */
+  mode?: "flow" | "hero";
+
+  /** flow: how far it rises across its pass, in vh. Nearer clouds rise more. */
+  rise?: number;
+  /** flow: how much nearer it gets. 0.1 = grows a tenth. Nearer clouds grow more. */
+  approach?: number;
+  /** hero: Framer speed factor — 1 is page speed, lower is further away. */
+  speed?: number;
+
+  /** px this cloud answers the cursor across its full range. Nearer = more. */
+  depth?: number;
+  /** seconds for one ambient traverse. 0 = still. */
+  drift?: number;
+}
+
+const {
+  src,
+  w,
+  top,
+  left = "50%",
+  layer = "back",
+  flip = false,
+  mode = "flow",
+  rise = 16,
+  approach = 0.1,
+  speed = 0.9,
+  depth = 14,
+  drift = 0,
+} = Astro.props;
+
+// Intrinsic sizes: an absolutely-positioned image sized only by CSS width is
+// 0px tall until it loads, so a lazy one never intersects the viewport and
+// never loads at all. These also reserve the box against layout shift.
+const SIZES: Record<string, [number, number]> = {
+  "sky-far": [1200, 670],
+  "sky-mid": [1200, 670],
+  "sky-near": [1200, 670],
+  "sky-front": [1200, 670],
+  "cloud-floor": [1200, 670],
+  "island-base": [1000, 545],
+  "island-misty": [900, 491],
+  motes: [760, 760],
+};
+const [iw, ih] = SIZES[src];
+
+// Plates whose LEFT and RIGHT edges are hard — measured off the alpha channel,
+// not guessed. They dissolve top and bottom, so they may sit anywhere
+// vertically, but their sides must never come on screen. This has now put a
+// straight vertical cut across the page twice, so the rule is enforced here
+// rather than trusted to each call site: centred, and always wider than the
+// viewport.
+const HARD_SIDES = new Set(["sky-far", "sky-mid", "sky-near", "sky-front"]);
+const sided = HARD_SIDES.has(src);
+const safeLeft = sided ? "50%" : left;
+const safeW = sided ? Math.max(w, 130) : w;
+
+// Start each cloud part-way through its own drift so they never move in step.
+const delay = drift > 0 ? -(((drift * 0.37 * (iw % 7)) % drift).toFixed(2)) : 0;
+---
+
+<div
+  class:list={["cloud", `cloud--${layer}`, `cloud--${mode}`]}
+  style={`--w:${safeW}vw; --top:${top}; --left:${safeLeft}; --depth:${depth}px;
+          --rise:${rise}vh; --approach:${approach}; --speed:${speed};`}
+>
+  <img
+    class:list={["cloud__art", { "cloud__art--drifts": drift > 0 }]}
+    src={withBase(`/images/dream/${src}.webp`)}
+    width={iw}
+    height={ih}
+    alt=""
+    aria-hidden="true"
+    loading={mode === "hero" ? "eager" : "lazy"}
+    decoding="async"
+    style={`--sx:${flip ? -1 : 1}; --drift:${drift}s; --delay:${delay}s;`}
+  />
+</div>
+
+<style>
+  .cloud {
+    position: absolute;
+    top: var(--top);
+    left: var(--left);
+    width: var(--w);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    /* The cursor camera: one pair of numbers on <html>, scaled by this
+       cloud's own depth. Pure CSS — no per-layer listener. */
+    translate: calc(var(--pointer-x, 0) * var(--depth))
+      calc(var(--pointer-y, 0) * var(--depth));
+  }
+
+  .cloud--back { z-index: 1; }
+  .cloud--front { z-index: 3; }
+
+  .cloud__art {
+    width: 100%;
+    height: auto;
+    max-width: none;
+    scale: var(--sx) 1;
+  }
+
+  /* Ambient drift: constant velocity, never eased. Measured off hadaka.jp
+     frame by frame — its ambient channel is steady travel, not an
+     accelerating-and-decelerating bob, and that is what makes it read as
+     endless rather than as a loop you can feel repeating. `linear` +
+     `alternate` is how you get constant speed from art that does not tile:
+     the velocity never changes, only the direction, and there is no seam. */
+  .cloud__art--drifts {
+    animation: cloud-drift var(--drift) linear var(--delay) infinite alternate;
+  }
+  @keyframes cloud-drift {
+    from { translate: -1.4% 1.1%; }
+    to   { translate: 1.4% -2.4%; }
+  }
+
+  @supports (animation-timeline: view()) {
+    /* FLOW — the cloud comes up past you and grows as it nears. */
+    html.js .cloud--flow {
+      animation: cloud-pass linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
+  @keyframes cloud-pass {
+    from {
+      transform: translate(-50%, calc(-50% + var(--rise)))
+        scale(calc(1 - var(--approach)));
+    }
+    to {
+      transform: translate(-50%, calc(-50% - var(--rise)))
+        scale(calc(1 + var(--approach)));
+    }
+  }
+
+  @supports (animation-timeline: scroll()) {
+    /* HERO — the arrival's speed-factor model, measured against the section's
+       capped height so the travel can never tear a gap open on resize. */
+    html.js .cloud--hero {
+      animation: cloud-hero linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 var(--range);
+    }
+  }
+  @keyframes cloud-hero {
+    to {
+      transform: translate(-50%, calc(-50% + (1 - var(--speed)) * var(--range)));
+    }
+  }
+
+  @media (max-width: 768px) {
+    /* Wider on a narrow screen: any plate whose own side edges are hard must
+       always overhang, or those edges walk into frame. */
+    .cloud { width: calc(var(--w) * 1.55); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* DESIGN_SYSTEM §4: ambient loops stop entirely. Not slowed — stopped.
+       The still frame is the primary design. */
+    html.js .cloud {
+      animation: none !important;
+      transform: translate(-50%, -50%) !important;
+      translate: none !important;
+    }
+    .cloud__art { animation: none !important; translate: none !important; }
+  }
+</style>
