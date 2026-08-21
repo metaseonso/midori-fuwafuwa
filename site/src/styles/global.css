@@ -111,17 +111,11 @@ button:focus-visible,
 .dreamground {
   --paper: #f4edd6;
   position: relative;
+  z-index: 1;
   overflow-x: clip;
-  background: linear-gradient(
-    180deg,
-    #c9edda 0%,
-    #d0efdf 12%,
-    #d8f0e2 30%,
-    #e3f1e4 52%,
-    #ecf0e2 74%,
-    #f2eede 90%,
-    #f4edd6 100%
-  );
+  /* No background. The Dreamland's ground is painted by the fixed <Stage>
+     behind this, so that one frame holds both the sky and the clouds and the
+     visitor never leaves it. */
 }
 
 /* Overscroll rubber-banding exposes the body, not .dreamground. */
