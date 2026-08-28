@@ -31,6 +31,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LOGO = ROOT / "brand" / "logo" / "midori_fuwafuwa_logo_official.png"
 OUT = ROOT / "site" / "public" / "images" / "dream"
+# The full-resolution PNG masters are NOT served. site/public/ deploys
+# verbatim, and shipping them put ~8MB of files nothing requests into every
+# deploy. Masters live here; only the WebP the site loads goes to OUT.
+MASTERS = ROOT / "art-masters" / "dream"
 
 MODEL = "gpt-image-1"
 
@@ -169,6 +173,7 @@ def save(name, png_bytes):
     from PIL import Image
 
     OUT.mkdir(parents=True, exist_ok=True)
+    MASTERS.mkdir(parents=True, exist_ok=True)
     im = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
     png = OUT / f"{name}.png"
     webp = OUT / f"{name}.webp"

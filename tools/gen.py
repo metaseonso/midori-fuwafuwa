@@ -36,6 +36,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LOGO = ROOT / "brand" / "logo" / "midori_fuwafuwa_logo_official.png"
 OUT = ROOT / "site" / "public" / "images" / "dream"
+# The full-resolution PNG masters are NOT served. site/public/ deploys
+# verbatim, and shipping them put ~8MB of files nothing requests into every
+# deploy. Masters live here; only the WebP the site loads goes to OUT.
+MASTERS = ROOT / "art-masters" / "dream"
 API = "https://openrouter.ai/api/v1/chat/completions"
 
 MODELS = {
@@ -278,11 +282,12 @@ def matte_cream(im, tol=14, feather=1.1):
 def save(name, png_bytes, keep_raw=True, plate='cream'):
     from PIL import Image
     OUT.mkdir(parents=True, exist_ok=True)
+    MASTERS.mkdir(parents=True, exist_ok=True)
     raw = Image.open(io.BytesIO(png_bytes))
     if keep_raw:
-        raw.convert("RGB").save(OUT / f"{name}_raw.png", optimize=True)
+        raw.convert("RGB").save(MASTERS / f"{name}_raw.png", optimize=True)
     im = matte_cream(raw) if plate == 'cream' else matte(raw)
-    im.save(OUT / f"{name}.png", optimize=True)
+    im.save(MASTERS / f"{name}.png", optimize=True)
     im.save(OUT / f"{name}.webp", "WEBP", quality=90, method=6)
     kb = (OUT / f"{name}.webp").stat().st_size // 1024
     print(f"  saved {name}.png {im.size}  ({kb} KB webp)")
@@ -319,13 +324,13 @@ def main():
     if args.rematte:
         from PIL import Image
         for n in names:
-            raw = OUT / f"{n}_raw.png"
+            raw = MASTERS / f"{n}_raw.png"
             if not raw.exists():
                 print(f"  skip {n}: no saved plate")
                 continue
             im = (matte_cream(Image.open(raw)) if args.plate == 'cream'
                   else matte(Image.open(raw), core_thresh=args.lo))
-            im.save(OUT / f"{n}.png", optimize=True)
+            im.save(MASTERS / f"{n}.png", optimize=True)
             im.save(OUT / f"{n}.webp", "WEBP", quality=90, method=6)
             print(f"  rematted {n} (lo={args.lo} hi={args.hi})")
         return
