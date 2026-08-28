@@ -49,6 +49,13 @@ interface Props {
   partScale?: number;
   /** Seconds for one ambient breath. 0 = none. Longer reads heavier. */
   drift?: number;
+  /** Trim the plate to the band its art actually occupies:
+   *  [aspectRatio, objectPositionY%]. The Y is NOT the art's centre within the
+   *  frame — with object-fit: cover that percentage distributes the OVERFLOW,
+   *  so it must be solved for. Box width cancels out of that solve, so one
+   *  number is correct at every viewport size. Purely a layer-size
+   *  optimisation; see the note by .plane--band. */
+  band?: [number, number];
 }
 
 const {
@@ -64,6 +71,7 @@ const {
   partX = "0vw",
   partY = "0vh",
   partScale = 1,
+  band,
 } = Astro.props;
 
 const SIZES: Record<string, [number, number]> = {
@@ -85,9 +93,10 @@ const offset = drift > 0 ? -(((drift * 0.37 * (iw % 7)) % drift).toFixed(2)) : 0
 ---
 
 <div
-  class:list={["plane", `plane--${layer}`]}
+  class:list={["plane", `plane--${layer}`, { "plane--band": !!band }]}
   style={`--speed:${speed}; --w:${w}vw; --top:${top}; --left:${left}; --depth:${depth}px;
-          --part-x:${partX}; --part-y:${partY}; --part-scale:${partScale};`}
+          --part-x:${partX}; --part-y:${partY}; --part-scale:${partScale};` +
+          (band ? ` --band-ar:${band[0]}; --band-y:${band[1]}%;` : "")}
 >
   <img
     class:list={["plane__art", { "plane__art--breathes": drift > 0 }]}
@@ -127,6 +136,22 @@ const offset = drift > 0 ? -(((drift * 0.37 * (iw % 7)) % drift).toFixed(2)) : 0
     height: auto;
     max-width: none;
     scale: var(--sx) 1;
+  }
+
+  /* Trim a plate to the band its art actually occupies.
+     sky-far's painting fills 47% of its frame and sky-mid's 59%; the rest is
+     blank alpha the compositor still blends on every scrolled frame. Measured:
+     hiding these two plates took scroll jank from 16% of frames over 20ms to
+     0, and so did shrinking them to 70% — so the cost was raw layer area, not
+     the masks and not the scale.
+     Done with object-fit rather than by cropping the files, because
+     re-encoding the crop came out five times HEAVIER than the original webp
+     and the point is to load less, not more. Same bytes, half the layer. */
+  .plane--band .plane__art {
+    aspect-ratio: var(--band-ar);
+    height: auto;
+    object-fit: cover;
+    object-position: 50% var(--band-y);
   }
   /* Ambient float is opt-in per plane, and deliberately NOT given to the big
      distant plates. Measured: breathing all four put ~10% of frames over 20ms

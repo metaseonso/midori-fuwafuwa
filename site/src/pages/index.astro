@@ -49,8 +49,8 @@ import { withBase } from "../lib/url";
                               version used sky-near and put a hard horizontal
                               seam across the top of the hero.
           Nothing is faded to hide an edge — DESIGN_SYSTEM §6. */}
-      <Plane src="sky-far"      w={118} top="10%" left="46%" layer="back"  depth={7}  drift={0}  partY="-20vh" partScale={1.1} {/* -> top edge */} />
-      <Plane src="sky-mid"      w={126} top="46%" left="56%" layer="back"  depth={13} drift={0}  partY="46vh"  partScale={1.12} {/* -> bottom edge */} flip />
+      <Plane src="sky-far" band={[3.669, 44.27]} w={118} top="6.91%" left="46%" layer="back"  depth={7}  drift={0}  partY="-20vh" partScale={1.1} {/* -> top edge */} />
+      <Plane src="sky-mid" band={[2.940, 45.01]} w={126} top="43.81%" left="56%" layer="back"  depth={13} drift={0}  partY="46vh"  partScale={1.12} {/* -> bottom edge */} flip />
       <Plane src="island-base"  w={40}  top="76%" left="89%" layer="front" depth={30} drift={21} partX="5vw"   partY="-13vh" partScale={1.16} {/* -> right edge */} flip />
       <Plane src="island-misty" w={44}  top="86%" left="12%" layer="front" depth={38} drift={17} partX="-4vw"  partY="-15vh" partScale={1.16} {/* -> left edge */} />
 

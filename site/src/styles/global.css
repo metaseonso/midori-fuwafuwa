@@ -8,11 +8,11 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Lenis drives programmatic scrolls itself; native smooth-behavior would
-   fight the lerp. These are the library's own recommended rules. */
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
-.lenis.lenis-stopped { overflow: hidden; }
+/* Lenis is gone. It put a lerp on every wheel tick, which is latency the
+   scroll-driven sequence pays for twice over, and a smooth-scroll library
+   holding its own internal scroll position is the usual reason a restored
+   position snaps back to the top on Back. Measured jank was identical with
+   and without it. Native scrolling now, so Back lands where it left. */
 
 body {
   margin: 0;
