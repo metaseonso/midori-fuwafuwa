@@ -5,20 +5,25 @@ Read [PROJECT.md](PROJECT.md) first for full studio context, then
 
 ## When the user says "GO"
 
-Start executing **BUILD_PLAN.md, Stage A, Phase 0**, in order, checking off each item as you
-complete it. Do not stop to re-derive or re-litigate anything the plan or `knowledgebase/`
-already settled — read `knowledgebase/decisions/decision-log.md` if something looks
-undecided before asking.
+**Read [OG_REVIEW.md](OG_REVIEW.md) first.** Stage A was built once and audited. The next step is
+**not** to restart from Phase 0; it is to *finish* the existing site in the order set out in
+OG_REVIEW.md §3 ("Order of work"). Step 1 is the founder approving the storyboard
+(https://claude.ai/artifact/CXSsd4HTGzVZaZTuCiTpp4). Do not build hub design work before that
+approval. Step 2 (the verification harness against the **built** site) comes before any design
+work.
 
-Work straight through Stage A (Phases 0–3: setup, the Dreamland hub, all three dream fields,
-the forest cycle) before touching Stage B. Stage B (Cloudflare, SEO, analytics, legal pages) is
-explicitly deferred — the founder wants the UX nailed first. Do not start it unprompted.
+All guardrails in `BUILD_PLAN.md` and `knowledgebase/craft/` still apply. Read
+`knowledgebase/decisions/decision-log.md` if something looks undecided before asking.
+
+Stage B (Cloudflare, SEO, analytics, legal pages) is explicitly deferred. The founder wants the
+UX nailed first. Do not start it unprompted.
 
 ## Required reading before writing any code
 
 | File | Why |
 |---|---|
-| `BUILD_PLAN.md` | The actual task list, staged, with guardrails and done-conditions |
+| `OG_REVIEW.md` | **Start here.** The vision in one page, what went wrong in past builds, the architecture and order of work for finishing |
+| `BUILD_PLAN.md` | Guardrails and done-conditions (its sequencing is superseded by OG_REVIEW.md) |
 | `brand/DESIGN_SYSTEM.md` | Palette, type, spacing, motion tokens — §7 is copy-pasteable CSS |
 | `knowledgebase/craft/the-dreamland.md` | The site concept and navigation model |
 | `knowledgebase/craft/crawlers-and-parallax.md` | **Hard build rules.** Read before writing the hub — violating these breaks the site for Google and every AI crawler |
@@ -42,5 +47,17 @@ explicitly deferred — the founder wants the UX nailed first. Do not start it u
 
 ## Skills installed for this project
 
-`.claude/skills/` — 8 official GreenSock GSAP skills, `scroll-experience`, `accessibility-auditor`,
-`zajno-motion`. All inspected and safe. Use them; don't reinstall or re-verify.
+`.claude/skills/` — all inspected and safe (bundled scripts are read-only). Don't reinstall or re-verify.
+
+- **Lean on these:** `webapp-testing` (verify the *built* site, never dev), `frontend-design`
+  (restraint, one orchestrated moment; ⚠️ its "cream background is an AI tell" note does not
+  apply here — the cream is sampled from the logo and the brief wins), `astro-transitions`
+  (native View Transitions; ClientRouter is being removed), `astro-images`, `astro-perf`,
+  `performance`, `core-web-vitals`, `web-quality-audit`, `accessibility-auditor`, `scroll-experience`.
+- `astro` bundles a scanner. In this repo run it as
+  `node .claude/skills/astro/scripts/astro-scan.mjs site --json` (not the plugin path in its docs).
+  It scores static source only — it cannot see the runtime bugs; Playwright on the build can.
+- GSAP skills (`gsap-core`, `-scrolltrigger`, `-timeline`, `-performance`, `-utils`) are reference
+  only: native CSS scroll timelines are primary; add GSAP only with a written reason.
+- Flagged for retirement, pending the founder's call (see OG_REVIEW.md §4): `gsap-react`,
+  `gsap-frameworks`, `gsap-plugins`, `zajno-motion`. Don't reach for them.
