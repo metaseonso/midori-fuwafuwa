@@ -19,3 +19,7 @@ pnpm-debug.log*
 .DS_Store
 .idea/
 .shots/
+
+# Python bytecode caches
+__pycache__/
+*.pyc
