@@ -5,12 +5,11 @@ Read [PROJECT.md](PROJECT.md) first for full studio context, then
 
 ## When the user says "GO"
 
-**Read [OG_REVIEW.md](OG_REVIEW.md) first.** Stage A was built once and audited. The next step is
-**not** to restart from Phase 0; it is to *finish* the existing site in the order set out in
-OG_REVIEW.md §3 ("Order of work"). Step 1 is the founder approving the storyboard
-(https://claude.ai/artifact/CXSsd4HTGzVZaZTuCiTpp4). Do not build hub design work before that
-approval. Step 2 (the verification harness against the **built** site) comes before any design
-work.
+**Read [OG_REVIEW.md](OG_REVIEW.md) first.** The live site's concept is the founder's: the whole
+logo on the clouds, one parting, all three dreams in one sky. **Do not replace it, and do not
+restart from Phase 0.** Work in the order set out in OG_REVIEW.md §3: the verification harness
+against the **built** site, then the listed bugs, then polish shown to the founder before it is
+committed.
 
 All guardrails in `BUILD_PLAN.md` and `knowledgebase/craft/` still apply. Read
 `knowledgebase/decisions/decision-log.md` if something looks undecided before asking.
@@ -22,7 +21,7 @@ UX nailed first. Do not start it unprompted.
 
 | File | Why |
 |---|---|
-| `OG_REVIEW.md` | **Start here.** The vision in one page, what went wrong in past builds, the architecture and order of work for finishing |
+| `OG_REVIEW.md` | **Start here.** The founder's settled concept, the live site's real bugs, and the order of work |
 | `BUILD_PLAN.md` | Guardrails and done-conditions (its sequencing is superseded by OG_REVIEW.md) |
 | `brand/DESIGN_SYSTEM.md` | Palette, type, spacing, motion tokens — §7 is copy-pasteable CSS |
 | `knowledgebase/craft/the-dreamland.md` | The site concept and navigation model |
