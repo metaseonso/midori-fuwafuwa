@@ -5,7 +5,9 @@
 // CSS properties so they compose on the compositor instead of overwriting one
 // another:
 //
-//   transform  — scroll parallax. The reference's speed-factor model.
+//   (scroll)   — NOT here. The scroll camera lives on the .rig that wraps
+//                each plane in index.astro, so it can scale the plane about
+//                the vanishing point. See knowledgebase/craft/the-passage.md.
 //   translate  — the cursor camera. The whole scene shifts as the visitor
 //                moves, each plane by an amount set by its depth.
 //   the img's own translate — ambient float. A slow, endless drift that runs
@@ -17,23 +19,10 @@
 // as lag. A page that breathes on its own does not depend on input to feel
 // alive.
 //
-// The scroll model, from the supplied reference:
-//  1. LAYERING   — transparent painted planes stacked by z-index; depth is
-//                  occlusion, not just speed.
-//  2. POSITIONING— absolute inside the hero, out of document flow.
-//  3. VELOCITY   — a Framer-style speed factor where 100% is page speed.
-//                  Position_y = Initial − (ScrollDelta × Speed) becomes its CSS
-//                  equivalent: the plane already travels with the page at 100%,
-//                  so the keyframe adds the shortfall (1 − speed) back down.
-//  4. CONSTRAINT — --range is the hero's capped height, min(100svh, 900px),
-//                  the same value .viewport-cap pins the section to, so travel
-//                  can never tear a gap open on resize.
 import { withBase } from "../lib/url";
 
 interface Props {
   src: string;
-  /** Framer's own scale: 1 = page speed, lower = further away. */
-  speed: number;
   /** vw */
   w: number;
   top: string;
@@ -42,11 +31,6 @@ interface Props {
   flip?: boolean;
   /** How far this plane answers the cursor, in px. Nearer planes move more. */
   depth?: number;
-  /** Where this cloud draws back to as the frame opens. */
-  partX?: string;
-  partY?: string;
-  /** How much nearer it gets as it draws back. */
-  partScale?: number;
   /** Seconds for one ambient breath. 0 = none. Longer reads heavier. */
   drift?: number;
   /** Trim the plate to the band its art actually occupies:
@@ -60,7 +44,6 @@ interface Props {
 
 const {
   src,
-  speed,
   w,
   top,
   left = "50%",
@@ -68,9 +51,6 @@ const {
   flip = false,
   depth = 10,
   drift = 26,
-  partX = "0vw",
-  partY = "0vh",
-  partScale = 1,
   band,
 } = Astro.props;
 
@@ -94,8 +74,7 @@ const offset = drift > 0 ? -(((drift * 0.37 * (iw % 7)) % drift).toFixed(2)) : 0
 
 <div
   class:list={["plane", `plane--${layer}`, { "plane--band": !!band }]}
-  style={`--speed:${speed}; --w:${w}vw; --top:${top}; --left:${left}; --depth:${depth}px;
-          --part-x:${partX}; --part-y:${partY}; --part-scale:${partScale};` +
+  style={`--w:${w}vw; --top:${top}; --left:${left}; --depth:${depth}px;` +
           (band ? ` --band-ar:${band[0]}; --band-y:${band[1]}%;` : "")}
 >
   <img
@@ -128,8 +107,9 @@ const offset = drift > 0 ? -(((drift * 0.37 * (iw % 7)) % drift).toFixed(2)) : 0
        pinning a layer for every plane only costs GPU memory. */
   }
 
-  .plane--back { z-index: -2; }
-  .plane--front { z-index: 1; }
+  /* Stacking is the rig's job now (index.astro): a rig with a transform is a
+     stacking context, so a z-index down here would only order the plane
+     inside its own rig. */
 
   .plane__art {
     width: 100%;
@@ -183,29 +163,6 @@ const offset = drift > 0 ? -(((drift * 0.37 * (iw % 7)) % drift).toFixed(2)) : 0
     to   { translate: 1.4% -2.4%; }
   }
 
-  @supports (animation-timeline: scroll()) {
-    /* ONE parting. The cloud draws back off the sky and stays back — it does
-       not open and shut three times any more. What is behind it is the sky
-       itself with all three dreams floating in it at once, so there is nothing
-       to close over between them.
-
-       0% is the identity transform, exactly where these clouds sit in plain
-       CSS, so the frame the visitor lands on is untouched. */
-    html.js .plane {
-      animation: plane-part linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0% 52%;
-    }
-  }
-  @keyframes plane-part {
-    from { transform: translate(-50%, -50%); }
-    to {
-      transform: translate(-50%, -50%)
-        translate(var(--part-x), var(--part-y))
-        scale(var(--part-scale));
-    }
-  }
-
   @media (max-width: 768px) {
     /* Wider still on a narrow screen: these plates must always overhang the
        viewport or their own straight edges walk into frame. */
@@ -214,11 +171,7 @@ const offset = drift > 0 ? -(((drift * 0.37 * (iw % 7)) % drift).toFixed(2)) : 0
 
   @media (prefers-reduced-motion: reduce) {
     /* DESIGN_SYSTEM §4: ambient loops stop entirely. Not slowed — stopped. */
-    html.js .plane {
-      animation: none !important;
-      transform: translate(-50%, -50%) !important;
-      translate: none !important;
-    }
+    html.js .plane { translate: none !important; }
       .plane__art { animation: none !important; translate: none !important; }
   }
 </style>

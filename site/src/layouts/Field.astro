@@ -27,6 +27,11 @@ interface Props {
 }
 
 const { title, description, eyebrow, name, tagline, image, recaps } = Astro.props;
+
+// Shared with this field's dream in the sky, so the painting you clicked
+// becomes this hero instead of the page cutting to it.
+const slug = Astro.url.pathname.split("/").filter(Boolean).pop();
+const vtName = `dream-${slug}`;
 ---
 
 <Layout title={title} description={description}>
@@ -55,6 +60,7 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
         {image ? (
           <img
             class="fhero__img"
+            style={`view-transition-name: ${vtName}`}
             src={image.webp}
             width={image.width}
             height={image.height}
@@ -71,6 +77,7 @@ const { title, description, eyebrow, name, tagline, image, recaps } = Astro.prop
              no alt, and the alt IS the artwork to every AI crawler. */
           <div
             class="fhero__unformed"
+            style={`view-transition-name: ${vtName}`}
             role="img"
             aria-label="No art yet — a soft bloom of mint and blush light where this field's painting will go."
           ></div>

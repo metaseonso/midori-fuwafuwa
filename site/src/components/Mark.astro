@@ -75,8 +75,9 @@ import { withBase } from "../lib/url";
   .mark__img {
     width: min(86vw, 74vh, 620px);
     height: auto;
-    /* The mark breathes with everything else. On `translate`, so it composes
-       with the scroll-driven lift that rides `transform`. */
+    /* The mark breathes with everything else. On `translate`, the only
+       animation on this element: the scroll camera rides the rig around the
+       mark and its fade rides .mark, so nothing here can overwrite it. */
     animation: mark-breathe 19s linear infinite alternate;
     /* The outermost 3% is empty cream margin — the artwork's own bounding box
        starts at 13% on the sides and 5% at the foot. Feathering only that
@@ -219,10 +220,13 @@ import { withBase } from "../lib/url";
       cy = 0,
       running = false;
 
-    // The section is where the cursor camera lives: one write per frame, read
-    // by every plane in the arrival. Publishing two numbers beats each layer
-    // running its own listener and its own maths.
-    const stage = (root.parentElement as HTMLElement) ?? root;
+    // The stage is where the cursor camera lives: one write per frame, read
+    // by every plane in the arrival AND every dream in the sky. Publishing two
+    // numbers beats each layer running its own listener and its own maths.
+    // Found by closest(), never parentElement: the mark sits inside a camera
+    // rig, and a parent lookup would publish to the rig and strand the rest.
+    const stage =
+      root.closest<HTMLElement>(".stage") ?? root.closest<HTMLElement>(".arrival") ?? root;
 
     function frame() {
       cx += (tx - cx) * EASE;

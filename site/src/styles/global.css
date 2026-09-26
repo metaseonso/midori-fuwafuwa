@@ -4,8 +4,9 @@
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
+/* Smooth in-page jumps, only for visitors who have not asked for less. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
 }
 
 /* Lenis is gone. It put a lerp on every wheel tick, which is latency the
@@ -195,7 +196,13 @@ html.js .reveal.is-visible {
   to   { opacity: 1; transform: none; }
 }
 
-/* ---- entering a field: sinking in. transform + opacity only ---- */
+/* ---- entering a field: sinking in. transform + opacity only ----
+   Native cross-document View Transitions: zero JavaScript, and every page
+   stays a real page, so Back is a real Back and html.js survives. (The old
+   ClientRouter swapped pages in place and stripped html.js on the way,
+   which dropped Back into the no-JS layout.) A dream's painting carries a
+   view-transition-name that its field's hero shares, so it becomes the hero. */
+@view-transition { navigation: auto; }
 @keyframes sink-in {
   from { opacity: 0; transform: translateY(-18px) scale(1.01); }
   to   { opacity: 1; transform: none; }
@@ -212,6 +219,7 @@ html.js .reveal.is-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
   ::view-transition-group(*),
   ::view-transition-old(*),
   ::view-transition-new(*) {

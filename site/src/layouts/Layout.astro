@@ -2,7 +2,6 @@
 import "../styles/tokens.css";
 import "../styles/fonts.css";
 import "../styles/global.css";
-import { ClientRouter } from "astro:transitions";
 import { withBase } from "../lib/url";
 
 interface Props {
@@ -33,8 +32,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:image" content={new URL(withBase("/images/mascot/mascot-with-easel.png"), Astro.site)} />
-
-    <ClientRouter />
 
     <script is:inline>
       document.documentElement.classList.add("js");

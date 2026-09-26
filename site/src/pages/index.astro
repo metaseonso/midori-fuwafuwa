@@ -15,151 +15,303 @@ import { withBase } from "../lib/url";
 // find ourselves through them" is WHIMSY's voice, not the studio's. It stays
 // on the Whimsy field page, where it already sits with its full framing. Do
 // not promote a production's line to studio level, however strong it reads.
+//
+// The concept is the founder's (821d81a, 81ad174): the arrival is the whole
+// site, the cloud and the mascot part ONCE, and behind them is the sky with
+// all three dreams in it at the same time. This file only decides how the
+// visitor travels there. That is a camera push through layered planes, a
+// multiplane dolly, and knowledgebase/craft/the-passage.md is the lesson it
+// was built from. Read that before changing a number here.
+
+// ── the camera ─────────────────────────────────────────────────────────────
+// One eased camera, c(p) = 1 − (1 − p)², travelling toward the planes as the
+// visitor scrolls the journey (p: 0 → 1). A plane that starts at distance d₀
+// is drawn at s = d₀ / (d₀ − c). That single hyperbola is the whole effect:
+// near planes rush past, far planes barely move, and the ease-out means the
+// last stretch settles instead of stopping dead.
+//
+// The keyframes are baked here at build time, never computed live: baked
+// `transform` keyframes run on the compositor, while an animated custom
+// property would drag every frame back onto the main thread.
+// Tune d₀, never a keyframe.
+const STOPS = Array.from({ length: 21 }, (_, i) => i / 20);
+const cam = (p: number) => 1 - (1 - p) ** 2;
+const proj = (d0: number, p: number) => d0 / (d0 - cam(p));
+const pct = (p: number) => `${+(p * 100).toFixed(2)}%`;
+const r = (x: number) => +x.toFixed(4);
+
+/** A plane the camera flies past: pure projection, then retired once it has
+ *  left the frame, so it stops costing compositor area. */
+function passing(name: string, d0: number, retire: number, opacity?: (p: number) => number) {
+  const rows = STOPS.filter((p) => p < retire).map((p) => {
+    const o = opacity ? ` opacity: ${r(opacity(p))};` : "";
+    return `${pct(p)} { transform: scale(${r(proj(d0, p))});${o} visibility: visible; }`;
+  });
+  const end = `scale(${r(proj(d0, retire))})`;
+  rows.push(`${pct(retire)} { transform: ${end};${opacity ? ` opacity: ${r(opacity(retire))};` : ""} visibility: visible; }`);
+  rows.push(`${pct(Math.min(retire + 0.005, 1))}, 100% { transform: ${end}; opacity: 0; visibility: hidden; }`);
+  return `@keyframes ${name} { ${rows.join(" ")} }`;
+}
+
+/** A far bank: it moves on the camera's curve for its depth, but ends on the
+ *  founder's approved framing (81ad174) — each cloud aimed at one edge, a
+ *  modest opening. */
+function bank(name: string, d0: number, aimY: number, sEnd: number) {
+  const span = proj(d0, 1) - 1;
+  const rows = STOPS.map((p) => {
+    const k = (proj(d0, p) - 1) / span;
+    return `${pct(p)} { transform: translateY(${r(aimY * k)}vh) scale(${r(1 + (sEnd - 1) * k)}); }`;
+  });
+  return `@keyframes ${name} { ${rows.join(" ")} }`;
+}
+
+/** A dream: already out there, far away, and the camera arrives at it.
+ *  Normalised so it lands at exactly scale(1) — crisp at rest. */
+function arriving(name: string, d0: number) {
+  const rows = STOPS.map((p) => `${pct(p)} { transform: scale(${r(proj(d0, p) / proj(d0, 1))}); }`);
+  return `@keyframes ${name} { ${rows.join(" ")} }`;
+}
+
+// Wisps inside the cloud: unseen at the landing, thickest at the crossing.
+const wisps = (p: number) =>
+  p < 0.2 ? 0 : p < 0.32 ? ((p - 0.2) / 0.12) * 0.9 : p < 0.5 ? 0.9 : Math.max(0, 0.9 * (1 - (p - 0.5) / 0.28));
+
+const CAMERA = [
+  bank("cam-far", 3.6, -20, 1.1),     // upper bank → top edge, behind the dreams
+  bank("cam-mid", 2.2, 46, 1.12),     // lower bank → bottom edge, in front of them
+  passing("cam-mark", 1.4, 0.66),     // the cloud you pass THROUGH
+  passing("cam-motes", 1.55, 0.8, wisps),
+  passing("cam-isles", 1.2, 0.47),    // near foreground, out past the sides
+  arriving("cam-kits", 2.5),
+  arriving("cam-whimsy", 2.9),
+  arriving("cam-couple", 3.1),
+].join("\n");
 ---
 
 <Layout
   title="Midori Fuwafuwa™ — a production studio based out of a Dreamland"
   description="A production studio based out of a Dreamland, shared by Seonso and Grumpy Carrot. Midori Fuwa Fuwa, and the different dream fields inside it."
 >
+  <style is:inline set:html={CAMERA}></style>
+
   <main id="main" class="dream dreamground">
-    <!-- ── arrival ────────────────────────────────────────────────────
-         The mark, whole and uncropped, on its own cream. The logo's
-         ground is #F4EDD6 (measured off the file's border), so the page
-         is that colour and the image needs no cutout at all. -->
-    <div class="frame">
-    <section class="arrival viewport-cap">
-      <h1 class="visually-hidden">Midori Fuwafuwa Studio</h1>
+    {/* The journey is the page. Its height is the stage plus the camera's
+        travel, and nothing comes after it: when the sky settles, the page
+        ends. Zero dead scroll. */}
+    <div class="journey">
+      <div class="stage">
+        {/* ── arrival ──────────────────────────────────────────────────
+            The mark, whole and uncropped, on its own cream, framed by the
+            painted cloud plates. This frame is the landing and it does not
+            change: every rig below starts at scale(1), exactly where plain
+            CSS puts it.
 
-      {/* Layered planes, bottom-heavy, so the arrival reads as a cloudscape
-          with a floor rather than a gradient with decoration on it. Speeds
-          are the reference's own scale: 100% is page speed, lower is further
-          away. Front planes are kept low, where they graze past the mascot
-          without ever crossing its face.
+            Which plate can go where was measured off each file's alpha:
+              sky-far, sky-mid  dissolve top and bottom, hard left/right
+                                → run wider than the viewport, edges off screen
+              island-misty      dissolves on all four edges
+              sky-near, sky-front  hard rectangles on all four edges → unusable
+            Nothing is faded to hide an edge — DESIGN_SYSTEM §6. */}
+        <section class="arrival">
+          <h1 class="visually-hidden">Midori Fuwafuwa Studio</h1>
 
-          Which plate can go where is not a taste call — it was measured off
-          the alpha channel of each file:
-            sky-far, sky-mid  dissolve top and bottom, hard left/right
-                              → run wider than the viewport, edges off screen
-            cloud-floor       dissolves at the top only
-                              → pinned low, its sides and foot off screen
-            island-misty      dissolves on all four edges → free to sit anywhere
-            sky-near, sky-front  hard rectangles on ALL four edges, and
-                              sky-near carries a straight cut inside the art
-                              itself → unusable here at any size. The first
-                              version used sky-near and put a hard horizontal
-                              seam across the top of the hero.
-          Nothing is faded to hide an edge — DESIGN_SYSTEM §6. */}
-      <Plane src="sky-far" band={[3.669, 44.27]} w={118} top="6.91%" left="46%" layer="back"  depth={7}  drift={0}  partY="-20vh" partScale={1.1} {/* -> top edge */} />
-      <Plane src="sky-mid" band={[2.940, 45.01]} w={126} top="43.81%" left="56%" layer="back"  depth={13} drift={0}  partY="46vh"  partScale={1.12} {/* -> bottom edge */} flip />
-      <Plane src="island-base"  w={40}  top="76%" left="89%" layer="front" depth={30} drift={21} partX="5vw"   partY="-13vh" partScale={1.16} {/* -> right edge */} flip />
-      <Plane src="island-misty" w={44}  top="86%" left="12%" layer="front" depth={38} drift={17} partX="-4vw"  partY="-15vh" partScale={1.16} {/* -> left edge */} />
+          <div class="rig rig--far">
+            <Plane src="sky-far" band={[3.669, 44.27]} w={118} top="6.91%" left="46%" depth={7} drift={0} />
+          </div>
+          <div class="rig rig--mid">
+            <Plane src="sky-mid" band={[2.940, 45.01]} w={126} top="43.81%" left="56%" depth={13} drift={0} flip />
+          </div>
 
-      <Mark />
+          <div class="rig rig--mark">
+            {/* Warm light behind the mark, reaching far past the logo's edge.
+                It rides the mark's rig, so as the camera closes in it swells
+                to fill the frame — that swell IS the crossing. */}
+            <div class="veil" aria-hidden="true"></div>
+            <Mark />
+          </div>
 
-      {/* Revealed inside the frame as the cloud draws off it. Reveal-on-scroll
-          is the architecture, by the founder's decision.
+          {/* The crossing. Full-frame and unscaled: the inside of the cloud.
+              It rises as the mark dissolves and clears as the sky arrives,
+              so nothing ever reads as a double exposure. */}
+          <div class="mist" aria-hidden="true"></div>
 
-          The guard that makes it acceptable is the one this project's own
-          crawlers-and-parallax.md prescribes: nothing is hidden except behind
-          `html.js`. With no JS these are a plain readable column under the
-          mark — and no AI crawler runs JS at all, so GPTBot, ClaudeBot,
-          PerplexityBot and the rest read the full page and every alt text.
-          Googlebot does render JS and will see the closed state; that document
-          calls this a risk zone rather than a violation and prescribes
-          checking it in URL Inspection before launch. Worth doing. */}
-      <div class="glimpses">
-        <a class="glimpse glimpse--01" href={withBase("/fields/the-kits/")}>
-          <img
-            class="glimpse__art"
-            src={withBase("/images/fields/the-kits-reference.webp")}
-            width="640" height="640"
-            alt="The Kits: a fox father in deep blue hanbok and a fox mother in floral pink, with four ginger fox-eared children, walking a lantern-lit forest path."
-            loading="lazy" decoding="async"
-          />
-          <span class="glimpse__word">
-            <span class="glimpse__index">01</span>
-            <span class="glimpse__name">The Kits</span>
-            <span class="glimpse__line">Seonso and Grumpy Carrot&rsquo;s children, on their journey exploring and learning about the many worlds around us.</span>
-          </span>
-        </a>
+          <div class="rig rig--motes" aria-hidden="true">
+            <Plane src="motes" w={46} top="40%" left="36%" depth={22} drift={0} />
+            <Plane src="motes" w={46} top="56%" left="65%" depth={26} drift={0} flip />
+          </div>
 
-        <a class="glimpse glimpse--02" href={withBase("/fields/whimsy/")}>
-          <img
-            class="glimpse__art"
-            src={withBase("/images/fields/whimsy-reference.webp")}
-            width="640" height="640"
-            alt="Whimsy: a lilac-haired fairy with iridescent wings hovering above an open journal, small green islands rising out of its written pages in a trail of gold sparkles."
-            loading="lazy" decoding="async"
-          />
-          <span class="glimpse__word">
-            <span class="glimpse__index">02</span>
-            <span class="glimpse__name">Whimsy</span>
-            <span class="glimpse__line">A magical fairy keeps your journal pages, notes and doodles safe &mdash; then sprinkles fairy dust to turn them into a world you can explore.</span>
-          </span>
-        </a>
+          <div class="rig rig--isles">
+            <Plane src="island-base"  w={40} top="76%" left="89%" depth={30} drift={21} flip />
+            <Plane src="island-misty" w={44} top="86%" left="12%" depth={38} drift={17} />
+          </div>
 
-        <a class="glimpse glimpse--03" href={withBase("/fields/couple-app/")}>
-          <span
-            class="glimpse__art glimpse__art--unformed"
-            role="img"
-            aria-label="No art yet — a bloom of mint and blush light where this field's painting will go."
-          ></span>
-          <span class="glimpse__word">
-            <span class="glimpse__index">03</span>
-            <span class="glimpse__name">Couple App</span>
-            <span class="glimpse__line">Very us (Midori Fuwa Fuwa). No name yet. No art yet.</span>
-          </span>
-        </a>
+          <p class="arrival__cue" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+              <path d="M6 10.5l7 6.5 7-6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </p>
+        </section>
+
+        {/* ── the sky ──────────────────────────────────────────────────
+            All three dreams at once, at different distances. Without the
+            enhancement this is simply the second panel under the arrival:
+            complete, still, nothing hidden, nothing overlapping. With it,
+            the sky sits behind the cloud and the camera flies you into it.
+
+            Each dream is a SLOT, not a painting: the art in it is a
+            placeholder that will be replaced by work of unknown composition,
+            so nothing here leans on what today's picture shows. */}
+        <section class="sky" aria-label="The dream fields">
+          <div class="sky__still" aria-hidden="true">
+            <Plane src="sky-far" band={[3.669, 44.27]} w={118} top="4%" left="46%" depth={7} drift={0} />
+            <Plane src="cloud-floor" w={150} top="98%" left="50%" depth={12} drift={0} />
+          </div>
+
+          <div class="rig rig--kits">
+            <a class="glimpse glimpse--01" href={withBase("/fields/the-kits/")}>
+              <span class="glimpse__frame" style="view-transition-name: dream-the-kits">
+                <img
+                  class="glimpse__art"
+                  src={withBase("/images/fields/the-kits-reference.webp")}
+                  width="640" height="640"
+                  alt="The Kits: a fox father in deep blue hanbok and a fox mother in floral pink, with four ginger fox-eared children, walking a lantern-lit forest path."
+                  loading="lazy" decoding="async"
+                />
+              </span>
+              <span class="glimpse__word">
+                <span class="glimpse__index">01</span>
+                <span class="glimpse__name">The Kits</span>
+                <span class="glimpse__line">Seonso and Grumpy Carrot&rsquo;s children, on their journey exploring and learning about the many worlds around us.</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="rig rig--whimsy">
+            <a class="glimpse glimpse--02" href={withBase("/fields/whimsy/")}>
+              <span class="glimpse__frame" style="view-transition-name: dream-whimsy">
+                <img
+                  class="glimpse__art"
+                  src={withBase("/images/fields/whimsy-reference.webp")}
+                  width="640" height="640"
+                  alt="Whimsy: a lilac-haired fairy with iridescent wings hovering above an open journal, small green islands rising out of its written pages in a trail of gold sparkles."
+                  loading="lazy" decoding="async"
+                />
+              </span>
+              <span class="glimpse__word">
+                <span class="glimpse__index">02</span>
+                <span class="glimpse__name">Whimsy</span>
+                <span class="glimpse__line">A magical fairy keeps your journal pages, notes and doodles safe &mdash; then sprinkles fairy dust to turn them into a world you can explore.</span>
+              </span>
+            </a>
+          </div>
+
+          <div class="rig rig--couple">
+            <a class="glimpse glimpse--03" href={withBase("/fields/couple-app/")}>
+              <span class="glimpse__frame" style="view-transition-name: dream-couple-app">
+                <span
+                  class="glimpse__art glimpse__art--unformed"
+                  role="img"
+                  aria-label="No art yet — a bloom of mint and blush light where this field's painting will go."
+                ></span>
+              </span>
+              <span class="glimpse__word">
+                <span class="glimpse__index">03</span>
+                <span class="glimpse__name">Couple App</span>
+                <span class="glimpse__line">Very us (Midori Fuwa Fuwa). No name yet. No art yet.</span>
+              </span>
+            </a>
+          </div>
+        </section>
       </div>
-
-      <p class="arrival__cue" aria-hidden="true">
-        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-          <path
-            d="M6 10.5l7 6.5 7-6.5"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-      </p>
-    </section>
-
-
     </div>
   </main>
 </Layout>
 
+<script>
+  // Focus is a scroll too. A keyboard visitor who tabs to a dream before the
+  // sky has opened would otherwise focus something still behind the cloud —
+  // so take them there. Instant under reduced motion.
+  const journey = document.querySelector<HTMLElement>(".journey");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+  document.querySelectorAll<HTMLElement>(".glimpse").forEach((el) =>
+    el.addEventListener("focus", () => {
+      if (!journey) return;
+      const end = journey.offsetTop + journey.offsetHeight - innerHeight;
+      if (scrollY < end - 2) scrollTo({ top: end, behavior: reduce.matches ? "auto" : "smooth" });
+    })
+  );
+</script>
+
 <style>
-  /* Ground, --paper and the body colour now live in global.css as
-     .dreamground — one definition shared with every dream field, so the
-     landing and the fields can never drift apart again. */
   .dream { position: relative; }
 
-  /* ── arrival ─────────────────────────────────────────────────────── */
-  .arrival {
-    display: grid;
-    place-items: center;
+  /* The stage is the one stacking context the whole scene shares, so a dream
+     can sit between two cloud banks: behind the lower bank, in front of the
+     upper one. That interleaving is most of what makes it read as IN the sky
+     rather than pasted on it. */
+  .stage {
     position: relative;
-    padding: var(--space-12) var(--space-6) var(--space-24);
     isolation: isolate;
-    /* No overflow clip, deliberately. Clipping the section drew a razor-
-       straight line across the full width where the cloudscape met the next
-       section — a hard rectangle, which is the one thing this design cannot
-       have. So nothing is clipped; instead every plane here is one whose
-       alpha dissolves at top and bottom, and it is simply allowed to carry
-       on past the fold. `isolation: isolate` keeps them all inside this
-       section's stacking context, so the copy below still paints over them.
-
-       The cap from .viewport-cap, named so the planes can measure their
-       travel against the section's real height (reference, point 4). */
-    --range: min(100svh, 900px);
+    --vp-y: 46%; /* the vanishing point: the mascot's belly */
   }
-  /* Warm light behind the mark. It reaches far past the logo's own edge and
-     dissolves long before it stops, so the mark's cream ground and the page
-     never meet at a line. */
-  .arrival::before {
-    content: "";
+
+  /* ── baseline: two still panels ────────────────────────────────────
+     This is what every visitor without the enhancement gets — no JS,
+     reduced motion, Firefox, a crawler's 8000px-tall viewport. It is the
+     finished design, not a fallback: the arrival, then the open sky. Both
+     are capped, nothing is hidden, nothing overlaps. */
+  .arrival,
+  .sky {
+    position: relative;
+    height: min(100svh, 900px);
+  }
+  .sky { overflow: clip; }
+  /* The scene's layers sit at negative z so they paint over the ground, which
+     puts these two transparent section boxes ABOVE them. They must never take
+     a click meant for a dream. The things you can touch opt back in below. */
+  .arrival,
+  .sky { pointer-events: none; }
+
+  /* The still panel's own framing clouds, behind everything in it. */
+  .sky__still { position: absolute; inset: 0; z-index: -9; }
+
+  .rig {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform-origin: 50% var(--vp-y);
+  }
+  /* Back to front. Negative, so every layer paints over the page ground.
+     The dreams sit in front of both banks, as in the approved frame
+     (81ad174): a name must never be lost behind a cloud. */
+  .rig--far    { z-index: -8; }
+  .rig--mid    { z-index: -7; }
+  .rig--kits,
+  .rig--whimsy,
+  .rig--couple { z-index: -6; }
+  .rig--mark   { z-index: -5; }
+  .mist        { z-index: -4; }
+  .rig--motes  { z-index: -3; }
+  .rig--isles  { z-index: 1; }
+  .rig--motes  { opacity: 0; }
+
+  .rig :global(.mark),
+  .glimpse { pointer-events: auto; }
+
+  .mist {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      ellipse 120% 95% at 50% var(--vp-y),
+      var(--paper) 0 42%,
+      rgba(244, 237, 214, 0.9) 70%,
+      rgba(244, 237, 214, 0.72) 100%
+    );
+  }
+
+  .veil {
     position: absolute;
     left: 50%;
     top: 50%;
@@ -173,7 +325,6 @@ import { withBase } from "../lib/url";
       rgba(244, 237, 214, 0.5) 68%,
       rgba(244, 237, 214, 0) 100%
     );
-    z-index: -1;
     pointer-events: none;
   }
 
@@ -186,207 +337,253 @@ import { withBase } from "../lib/url";
     margin: 0;
     color: var(--sage);
   }
-
-  /* Weightless, and a little late: the mark hangs before it lifts away. */
-  @supports (animation-timeline: scroll()) {
-    html.js .arrival :global(.mark__img) {
-      animation: mark-away linear both;
-      animation-timeline: scroll(root);
-      /* On the same clock as the cloud, and finished before the first project
-         arrives. At 78vh of a 430vh scroll the mark was still a fifth visible
-         when The Kits came in, so STUDIO sat on top of the title. */
-      animation-range: 0% 8%;
-    }
-    html.js .arrival__cue {
-      animation: cue-away linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0% 3%;
-    }
-  }
-  @keyframes mark-away {
-    0%   { transform: translateY(0) scale(1); opacity: 1; }
-    38%  { transform: translateY(-8px) scale(1.005); opacity: 1; }
-    100% { transform: translateY(-84px) scale(0.955); opacity: 0; }
-  }
-  @keyframes cue-away {
-    to { opacity: 0; transform: translateX(-50%) translateY(10px); }
-  }
-
   html.js .arrival__cue svg { animation: cue-breathe 3.4s var(--ease-standard) infinite; }
   @keyframes cue-breathe {
     0%, 100% { transform: translateY(0); opacity: 0.75; }
     50%      { transform: translateY(6px); opacity: 1; }
   }
 
-  /* ── the frame ───────────────────────────────────────────────────
-     The arrival is the whole site. The cloud and the mascot part ONCE, and
-     what is behind them is the sky itself with all three dreams floating in
-     it at the same time. Not a sequence — a place.
-
-     BASELINE FIRST. Everything before the @supports block is a plain readable
-     page: the mark, then the three dreams in an ordinary column. Pinning,
-     parting and floating are the enhancement. */
-  .frame { position: relative; }
-  .arrival { max-height: none; }
-
-  .glimpses {
-    display: grid;
-    gap: clamp(var(--space-16), 12vh, var(--space-32));
-    justify-items: center;
-    padding: clamp(var(--space-16), 12vh, var(--space-32)) var(--space-6) 0;
-  }
+  /* ── the dream slots ───────────────────────────────────────────────
+     Positioned by their centre. Sizes carry pixel floors, so a phone never
+     shrinks a dream to a thumbnail. */
   .glimpse {
+    --x: 30%; --y: 50%; --size: 300px;
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--size);
     display: grid;
     justify-items: center;
-    gap: var(--space-6);
-    max-width: 34rem;
+    gap: var(--space-3);
+    transform: translate(-50%, -50%);
+    translate: calc(var(--pointer-x, 0) * var(--depth, 20px))
+               calc(var(--pointer-y, 0) * var(--depth, 20px));
     text-decoration: none;
     color: inherit;
   }
-  .glimpse__art {
-    width: min(64vw, 460px);
-    height: auto;
-    /* Soft round bleed, never a rectangle. */
+  .glimpse--01 { --x: 30%; --y: 50%; --size: clamp(320px, 27vw, 440px); --depth: 26px; }
+  .glimpse--02 { --x: 71%; --y: 32%; --size: clamp(220px, 18vw, 300px); --depth: 17px; }
+  .glimpse--03 { --x: 57%; --y: 72%; --size: clamp(180px, 14vw, 240px); --depth: 34px; }
+
+  .glimpse__frame {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    /* Soft round bleed, never a rectangle — and centre-weighted, because
+       we cannot know where a future painting keeps its subject. */
     -webkit-mask-image: radial-gradient(closest-side circle at 50% 50%,
       #000 62%, rgba(0,0,0,.9) 78%, rgba(0,0,0,.45) 90%, transparent 100%);
     mask-image: radial-gradient(closest-side circle at 50% 50%,
       #000 62%, rgba(0,0,0,.9) 78%, rgba(0,0,0,.45) 90%, transparent 100%);
+    transition: scale var(--dur-ui) var(--ease-out-soft), translate var(--dur-ui) var(--ease-out-soft);
+  }
+  /* Depth haze. Zero at rest — DESIGN_SYSTEM §6: art is never dimmed. */
+  .glimpse__frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--paper);
+    opacity: 0;
+  }
+  /* A pre-painted glow behind the art, faded in on hover. Opacity only. */
+  .glimpse::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: calc(var(--size) / 2);
+    width: calc(var(--size) * 1.18);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(190 236 206 / .85), rgb(190 236 206 / 0));
+    opacity: 0;
+    transition: opacity var(--dur-ui) var(--ease-out-soft);
+    z-index: -1;
+  }
+  .glimpse__art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   /* The dream with no art yet. It has to read as a PRESENCE — something
-     waiting — not as a gap in the sky, so the colour holds to the middle of
-     each stop instead of fading from the centre out. */
+     waiting — not as a gap in the sky. */
   .glimpse__art--unformed {
-    display: block;
-    aspect-ratio: 1;
     background:
       radial-gradient(circle at 42% 38%, rgb(248 209 209 / .95) 0 22%, rgb(248 209 209 / 0) 60%),
       radial-gradient(circle at 62% 58%, rgb(190 236 206 / .95) 0 24%, rgb(190 236 206 / 0) 62%),
       radial-gradient(circle at 50% 50%, rgb(252 242 244 / .9) 0 30%, rgb(209 239 222 / 0) 74%);
   }
+
   .glimpse__word { display: grid; justify-items: center; text-align: center; }
   .glimpse__index {
     font-family: var(--font-display); font-weight: 600;
     font-size: var(--text-xs); letter-spacing: .34em;
-    color: var(--mint-deep); margin-bottom: var(--space-2);
+    color: var(--mint-deep); margin-bottom: var(--space-1);
   }
+  /* Names only in the sky (founder, 81ad174). Ink, with a paper halo, so a
+     name stays readable wherever a cloud happens to drift behind it. */
   .glimpse__name {
     font-family: var(--font-display); font-weight: 700;
-    font-size: clamp(1.9rem, 4vw, 2.8rem); line-height: 1.06;
-    letter-spacing: -.015em; color: var(--ink); margin-bottom: var(--space-3);
+    line-height: 1.06; letter-spacing: -.015em; color: var(--ink);
+    text-shadow: 0 0 .5em var(--paper), 0 0 1.2em var(--paper);
     transition: color var(--dur-ui) var(--ease-standard);
   }
+  .glimpse--01 .glimpse__name { font-size: 2rem; }
+  .glimpse--02 .glimpse__name { font-size: 1.5rem; }
+  .glimpse--03 .glimpse__name { font-size: 1.3rem; }
+  /* The description is the first thing on each field's own page, one click
+     away. It stays in the HTML for crawlers and screen readers. */
   .glimpse__line {
-    font-size: clamp(.95rem, 1.05vw, 1.05rem);
-    line-height: 1.58; color: var(--wood); max-width: 30ch;
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
   }
-  .glimpse:hover .glimpse__name { color: var(--mint-deep); }
-  .glimpse:focus-visible {
+
+  /* Choosing: the dream lifts toward you and glows. */
+  .glimpse:hover .glimpse__frame,
+  .glimpse:focus-visible .glimpse__frame { translate: 0 -6px; scale: 1.03; }
+  .glimpse:hover::before,
+  .glimpse:focus-visible::before { opacity: .8; }
+  .glimpse:hover .glimpse__name,
+  .glimpse:focus-visible .glimpse__name { color: var(--mint-deep); }
+  .glimpse:active .glimpse__frame { scale: .98; }
+  .glimpse:focus-visible { outline: none; }
+  .glimpse:focus-visible .glimpse__frame {
     outline: 3px solid var(--mint-deep);
-    outline-offset: var(--space-4);
-    border-radius: var(--radius-xl);
+    outline-offset: 6px;
+    border-radius: 50%;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
+  .glimpse:focus-visible .glimpse__art { border-radius: 50%; }
 
-  /* ── the enhancement: one frame, one parting, a sky of dreams ────── */
-  @supports (animation-timeline: scroll()) {
-    /* Short on purpose. Once the sky is open there is nothing left to
-       reveal, so there is no reason to keep scrolling. */
-    html.js .frame { height: calc(170vh + 100svh); }
-    html.js .arrival {
-      position: sticky;
-      top: 0;
-      min-height: min(100svh, 900px);
-      max-height: min(100svh, 900px);
-    }
-
-    /* The dreams stop being a column and become a constellation: three
-       things floating at different places and different distances in the
-       same open sky. Spreading them is what stops them stacking. */
-    html.js .glimpses {
-      position: absolute;
-      inset: 0;
-      display: block;
-      padding: 0;
-      pointer-events: none;
-      z-index: 4;
-    }
-    html.js .glimpse {
-      position: absolute;
-      left: var(--x);
-      top: var(--y);
-      width: var(--size);
-      max-width: none;
-      display: grid;
-      justify-items: center;
-      gap: var(--space-4);
-      opacity: 0;
-      /* transform carries the reveal; translate carries the cursor camera and
-         the float, so the three never overwrite one another. */
-      transform: translate(-50%, -50%) scale(.9);
-      translate: calc(var(--pointer-x, 0) * var(--depth))
-                 calc(var(--pointer-y, 0) * var(--depth));
-      animation: dream-in linear both;
-      animation-timeline: scroll(root);
-    }
-    html.js .glimpse__art { width: 100%; }
-
-    /* Loose arc across the sky. Sizes differ because distance differs. */
-    html.js .glimpse--01 { --x: 28%; --y: 49%; --size: 25vw; --depth: 26px; animation-range: 30% 62%; }
-    html.js .glimpse--02 { --x: 73%; --y: 33%; --size: 19vw; --depth: 17px; animation-range: 36% 68%; }
-    html.js .glimpse--03 { --x: 58%; --y: 70%; --size: 16vw; --depth: 34px; animation-range: 42% 74%; }
-
-    /* Names only up here. Three paintings plus three paragraphs in one frame
-       read as a crowded board, not as dreams floating in open sky — and the
-       description is the first thing on the field's own page anyway, one
-       click away. The full line stays in the baseline column below, so
-       nothing the founders wrote is lost from the page. */
-    html.js .glimpse__line { display: none; }
-    html.js .glimpse--01 .glimpse__name { font-size: clamp(1.6rem, 2.4vw, 2.2rem); }
-    html.js .glimpse--02 .glimpse__name { font-size: clamp(1.3rem, 1.9vw, 1.75rem); }
-    html.js .glimpse--03 .glimpse__name { font-size: clamp(1.1rem, 1.55vw, 1.45rem); }
-
-    /* Each dream drifts on its own, so the sky is alive once it is open. */
-    html.js .glimpse--01 .glimpse__art { animation: dream-float 23s linear -3s infinite alternate; }
-    html.js .glimpse--02 .glimpse__art { animation: dream-float 19s linear -11s infinite alternate; }
-    html.js .glimpse--03 .glimpse__art { animation: dream-float 27s linear -7s infinite alternate; }
-  }
-
-  @keyframes dream-in {
-    0%   { opacity: 0; transform: translate(-50%, -50%) scale(.9); pointer-events: none; }
-    55%  { opacity: 1; }
-    100% { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
-  }
+  /* Each dream drifts on its own, so the sky is alive once it is open. */
+  html.js .glimpse--01 .glimpse__art { animation: dream-float 23s linear -3s infinite alternate; }
+  html.js .glimpse--02 .glimpse__art { animation: dream-float 19s linear -11s infinite alternate; }
+  html.js .glimpse--03 .glimpse__art { animation: dream-float 27s linear -7s infinite alternate; }
   @keyframes dream-float {
     from { translate: -1.6% 2.2%; }
     to   { translate: 1.6% -2.6%; }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    /* No pinning, no reveal: the plain readable column, still and complete. */
-    html.js .frame { height: auto; }
-    html.js .arrival { position: static; max-height: none; }
-    html.js .glimpses { position: static; display: grid; pointer-events: auto; padding: clamp(var(--space-16), 12vh, var(--space-32)) var(--space-6) 0; }
-    html.js .glimpse {
-      position: static;
-      width: auto;
-      opacity: 1 !important;
-      transform: none !important;
-      translate: none !important;
-      pointer-events: auto;
-      animation: none !important;
-    }
-    html.js .glimpse__art { width: min(64vw, 460px); animation: none !important; translate: none !important; }
+  /* A portrait frame is a different composition, not a smaller one. */
+  @media (max-width: 600px) {
+    .stage { --vp-y: 44%; }
+    .glimpse--01 { --x: 50%; --y: 45%; --size: clamp(200px, 60vw, 260px); }
+    .glimpse--02 { --x: 70%; --y: 15%; --size: clamp(128px, 36vw, 170px); }
+    .glimpse--03 { --x: 30%; --y: 76%; --size: clamp(120px, 34vw, 160px); }
+    .glimpse--01 .glimpse__name { font-size: 1.7rem; }
+    .glimpse--02 .glimpse__name { font-size: 1.3rem; }
+    .glimpse--03 .glimpse__name { font-size: 1.15rem; }
+  }
 
-    html.js .arrival :global(.mark__img),
-    html.js .arrival__cue,
-    html.js .arrival__cue svg {
-      animation: none !important;
-      opacity: 1 !important;
-      transform: none !important;
+  /* ── the passage ───────────────────────────────────────────────────
+     Only where it is safe: scroll-driven animation supported, script
+     running, motion welcome, and a viewport a person could have. The
+     max-height gate is what keeps Googlebot's 1024×8000 render on the
+     still panels with every dream visible — never trust an inactive
+     timeline to show base styles. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) and (min-height: 480px) and (max-height: 1500px) {
+      html.js .journey {
+        --travel: min(140vh, 1260px);
+        height: calc(min(100svh, 900px) + var(--travel));
+        view-timeline: --journey block;
+      }
+      html.js .stage {
+        position: sticky;
+        top: 0;
+        height: min(100svh, 900px);
+        overflow: clip;
+      }
+      html.js .arrival,
+      html.js .sky {
+        position: absolute;
+        inset: 0;
+        height: auto;
+        overflow: visible;
+      }
+      html.js .sky__still { display: none; }
+
+      html.js .rig,
+      html.js .arrival__cue,
+      html.js .rig :global(.mark),
+      html.js .veil,
+      html.js .mist,
+      html.js .glimpse,
+      html.js .glimpse__frame::after,
+      html.js .glimpse__word {
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: --journey;
+        animation-range: contain 0% contain 100%;
+      }
+      html.js .rig--far    { animation-name: cam-far; }
+      html.js .rig--mid    { animation-name: cam-mid; }
+      html.js .rig--mark   { animation-name: cam-mark; }
+      html.js .rig--motes  { animation-name: cam-motes; }
+      html.js .rig--isles  { animation-name: cam-isles; }
+      html.js .rig--kits   { animation-name: cam-kits; }
+      html.js .rig--whimsy { animation-name: cam-whimsy; }
+      html.js .rig--couple { animation-name: cam-couple; }
+
+      /* The handshake: the cue is gone as soon as the world answers. */
+      html.js .arrival__cue { animation-name: cue-away; }
+      /* Through, not away: the art thins before the letterforms loom, and
+         is gone before they fill the frame. */
+      html.js .rig :global(.mark) { animation-name: mark-through; }
+      /* The mark's own cream carries the whiteout, then clears. */
+      html.js .veil { animation-name: veil-clear; }
+      html.js .mist { animation-name: mist-cross; }
+
+      /* The dreams were always there. They clear as you arrive: present
+         under the veil, hazy, then sharp; names last, once they hold still. */
+      html.js .glimpse { animation-name: dream-present; }
+      html.js .glimpse__frame::after { animation-name: dream-haze; }
+      html.js .glimpse__word { animation-name: dream-name; }
     }
-    .arrival__cue { transform: translateX(-50%) !important; }
-    /* The floor only loses its animation. Blanket `transform: none` here
-       would also strip its centring translate, and out-specify any attempt
-       to put it back. */
-    html.js .rest__floor { animation: none !important; }
+  }
+
+  @keyframes cue-away {
+    0%   { opacity: 1; }
+    4%, 100% { opacity: 0; }
+  }
+  /* The mark stays solid while it comes toward you — an object, not a
+     ghost — and dissolves only as the mist rises in front of it. */
+  @keyframes mark-through {
+    0%, 26% { opacity: 1; visibility: visible; }
+    44%  { opacity: 0; visibility: visible; }
+    45%, 100% { opacity: 0; visibility: hidden; }
+  }
+  @keyframes veil-clear {
+    0%, 44% { opacity: 1; }
+    56%, 100% { opacity: 0; }
+  }
+  @keyframes mist-cross {
+    0%, 24% { opacity: 0; }
+    40%, 50% { opacity: 1; }
+    66%, 100% { opacity: 0; }
+  }
+  /* The dreams are there before the mist clears, so the clearing reveals
+     them rather than them popping in. */
+  @keyframes dream-present {
+    0%, 36% { opacity: 0; pointer-events: none; }
+    46%  { opacity: 1; pointer-events: auto; }
+    100% { opacity: 1; pointer-events: auto; }
+  }
+  @keyframes dream-haze {
+    0%, 50% { opacity: .6; }
+    85%, 100% { opacity: 0; }
+  }
+  @keyframes dream-name {
+    0%, 70% { opacity: 0; translate: 0 8px; }
+    90%, 100% { opacity: 1; translate: 0 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js .glimpse__art { animation: none !important; translate: none !important; }
+    html.js .arrival__cue svg { animation: none !important; }
+    .glimpse__frame, .glimpse::before, .glimpse__name { transition: none; }
   }
 </style>
